@@ -18,7 +18,7 @@ namespace Data
 
         public DbSet<Domain.Models.Task> Tasks { get; set; } = null!;
 
-        public DbSet<Subtask> Subtasks { get; set; } = null!;
+        public DbSet<SubTask> Subtasks { get; set; } = null!;
 
         public DbSet<Tag> Tags { get; set; } = null!;
 
