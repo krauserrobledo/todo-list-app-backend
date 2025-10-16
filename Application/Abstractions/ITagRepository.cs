@@ -7,8 +7,8 @@ namespace Application.Abstractions
         // Get all tags with related entities
         Task<ICollection<Tag>> GetTagsByUser(string userId);
         Task<Tag?> GetTagById(string tagId);
-        Task<Tag?> GetTagByName(string name, string userId);
-        Task<bool> TagExists(string tagId);
+        Task<ICollection<Tag>> GetTagsByTask(string taskId, string userId);
+
         Task<bool> TagNameExists(string name, string userId);
 
         // CRUD operations
