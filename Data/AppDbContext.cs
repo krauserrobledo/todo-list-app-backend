@@ -18,7 +18,7 @@ namespace Data
 
         public DbSet<Domain.Models.Task> Tasks { get; set; } = null!;
 
-        public DbSet<SubTask> Subtasks { get; set; } = null!;
+        public DbSet<Subtask> Subtasks { get; set; } = null!;
 
         public DbSet<Tag> Tags { get; set; } = null!;
 
@@ -30,12 +30,12 @@ namespace Data
         /**
         src/
 ├── Domain/
-│   ├── Entities/           # Tus modelos (User, Task, etc.)
-│   └── Interfaces/         # IAppDbContext, repositorios
+│   ├── Entities/           # models (User, Task, etc.)
+│   └── Interfaces/         # IAppDbContext, repository
 ├── Infrastructure/
 │   └── Data/
-│       ├── Configurations/ # ✅ Configuraciones separadas
-│       ├── AppDbContext.cs # ✅ Aquí sí va el DbContext
+│       ├── Configurations/ # 
+│       ├── AppDbContext.cs # 
 │       └── Repositories/
 └── Web/                    # API 
 

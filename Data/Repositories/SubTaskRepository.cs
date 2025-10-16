@@ -4,48 +4,49 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Data.Repositories
 {
-    public class SubTaskRepository : ISubTaskRepository
+    public class SubtaskRepository : ISubtaskRepository
     {
         // DB Context
         private readonly AppDbContext _context;
         // Dependency Injection of DbContext would be here
-        public SubTaskRepository(AppDbContext context)
+        public SubtaskRepository(AppDbContext context)
         {
             _context = context;
         }
-        public async Task<SubTask> CreateSubTask(SubTask subTask)
+        public async Task<Subtask> CreateSubtask(Subtask subtask)
         {
             // Validate input
-            if (string.IsNullOrWhiteSpace(subTask.Title))
-                throw new ArgumentException("SubTask title cannot be null or WhiteSpace.", nameof(subTask.Title));
+            if (string.IsNullOrWhiteSpace(subtask.Title))
+                throw new ArgumentException("SubTask title cannot be null or WhiteSpace.", nameof(subtask.Title));
             
-            if (subTask.Title.Length > 100)
-                throw new ArgumentException("SubTask title cannot exceed 100 characters.", nameof(subTask.Title));
+            if (subtask.Title.Length > 100)
+                throw new ArgumentException("SubTask title cannot exceed 100 characters.", nameof(subtask.Title));
 
-            if (string.IsNullOrEmpty(subTask.Title))
-                throw new ArgumentException("Task ID cannot be null or empty.", nameof(subTask.TaskId));
+            if (string.IsNullOrEmpty(subtask.Title))
+                throw new ArgumentException("Task ID cannot be null or empty.", nameof(subtask.TaskId));
 
-            if (string.IsNullOrWhiteSpace(subTask.TaskId))
-                throw new ArgumentException("Task ID cannot be whitespace.", nameof(subTask.TaskId));
+            if (string.IsNullOrWhiteSpace(subtask.TaskId))
+                throw new ArgumentException("Task ID cannot be whitespace.", nameof(subtask.TaskId));
 
 
             // Generate a new GUID for the ID if not provided
-            if (string.IsNullOrEmpty(subTask.Id) || string.IsNullOrWhiteSpace(subTask.Id))
-                subTask.Id = Guid.NewGuid().ToString();
+            if (string.IsNullOrEmpty(subtask.Id) || string.IsNullOrWhiteSpace(subtask.Id))
+                subtask.Id = Guid.NewGuid().ToString();
 
 
             // Clean up Title and TaskId
-            subTask.Title = subTask.Title.Trim();
-            subTask.TaskId = subTask.TaskId.Trim();
-            // subTask.Task = null!; // Avoid EF Core tracking issues
 
-            // Add to DbContext and save changes    
-            await _context.Subtasks.AddAsync(subTask);
+            subtask.Title = subtask.Title.Trim();
+            subtask.TaskId = subtask.TaskId.Trim();
+
+            // Add to DbContext and save changes
+            await _context.Subtasks.AddAsync(subtask);
             await _context.SaveChangesAsync();
-            return subTask;
+            return subtask;
+
         }
 
-        public async Task<bool> DeleteSubTask(string id)
+        public async Task<bool> DeleteSubtask(string id)
         {
             // Validate input
             if (string.IsNullOrEmpty(id))
@@ -68,7 +69,7 @@ namespace Data.Repositories
 
         }
 
-        public async Task<ICollection<SubTask>> GetAllSubTasksByTask(string taskId)
+        public async Task<ICollection<Subtask>> GetAllSubtasksByTask(string taskId)
         {
             // Validate input
             if (string.IsNullOrEmpty(taskId))
@@ -82,7 +83,7 @@ namespace Data.Repositories
             return subTasks;
         }
 
-        public Task<SubTask?> GetSubTaskById(string subTaskId)
+        public Task<Subtask?> GetSubtaskById(string subTaskId)
         {
             // Validate input
             if (string.IsNullOrEmpty(subTaskId))
@@ -94,7 +95,7 @@ namespace Data.Repositories
                 .FirstOrDefaultAsync(st => st.Id == subTaskId);
         }
 
-        public async Task<SubTask?> UpdateSubTask(SubTask subTask)
+        public async Task<Subtask?> UpdateSubtask(Subtask subTask)
         {
             // Validate input
             if (subTask == null)

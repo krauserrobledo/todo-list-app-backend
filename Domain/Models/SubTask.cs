@@ -1,6 +1,6 @@
 ﻿namespace Domain.Models;
 
-public class SubTask
+public class Subtask
 {
     public required string Id { get; set; }
 

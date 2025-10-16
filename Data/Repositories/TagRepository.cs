@@ -91,7 +91,7 @@ namespace Data.Repositories
             // Verify task belongs to user
             var task = await _context.Tasks
                 .AsNoTracking()
-                .FirstOrDefaultAsync(t => t.Id == taskId && t.UserId == userId);
+                .FirstOrDefaultAsync(t => t.Id == taskId && t.CreatedBy.Id == userId);
             if (task == null)
                 throw new ArgumentException("Task not found or does not belong to the user.", nameof(taskId));
 

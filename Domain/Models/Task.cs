@@ -12,9 +12,7 @@ public class Task
 
     public string Status { get; set; } = null!;
 
-    public required string UserId { get; set; }
-
-    public virtual ICollection<SubTask> Subtasks { get; set; } = new List<SubTask>();
+    public virtual ICollection<Subtask> Subtasks { get; set; } = new List<Subtask>();
 
     public virtual ICollection<TaskCategory> TaskCategories { get; set; } = new List<TaskCategory>();
 

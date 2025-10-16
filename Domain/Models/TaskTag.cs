@@ -2,8 +2,6 @@
 
 public class TaskTag
 {
-    public required string Id { get; set; }
-
     public required string TaskId { get; set; }
 
     public required string TagId { get; set; }

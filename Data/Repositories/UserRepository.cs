@@ -89,7 +89,7 @@ namespace Data.Repositories
                 throw new ArgumentException("User ID cannot be whitespace.", nameof(userId));
             // Count tasks for the user
             return await _context.Tasks
-                .CountAsync(t => t.UserId == userId.Trim());
+                .CountAsync(t => t.CreatedBy.Id == userId.Trim());
         }
         
         async Task<User> IUserRepository.GetUserWithTasks(string userId)
