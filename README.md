@@ -87,7 +87,7 @@
 
 # ***7. Minimal API.***
 
-  - This project is set as single starup project in Solution.
+  - This project is set as single startup project in Solution.
     
   - Repositories Dependency Injection register in Program.cs :
 
