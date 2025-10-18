@@ -84,14 +84,20 @@
 - Identity Folder added to contain Application user model.
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> a00545d (refactor(auth): TokenService.cs refactoring to resolve dependency cycle)
 - Migrations folder generated in this Layer for Data Base Migration.
 
 - Abstractions/ITokenService.cs moved from Appplication project to solve Dependency Cycle.
 
 - Services/TokenService.cs moved from Application Layer to solve dependency Cycle.
+<<<<<<< HEAD
 =======
 - Migrations folder generated in this Layer for Data Base Migration
 >>>>>>> 178425a (docs: Clarify Identity and migrations updates in README)
+=======
+>>>>>>> a00545d (refactor(auth): TokenService.cs refactoring to resolve dependency cycle)
 
 # ***6. Application Layer.***
 	
@@ -137,9 +143,13 @@
 # ***8. Next Week´s Sprint (10/20)***
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 - Solve DEPENDENCY CYCLE between Application and Data.
 =======
 >>>>>>> 178425a (docs: Clarify Identity and migrations updates in README)
+=======
+- Solve DEPENDENCY CYCLE between Application and Data.
+>>>>>>> a00545d (refactor(auth): TokenService.cs refactoring to resolve dependency cycle)
 - Modificate Repositories for Linq Qeries addition.
 - Middlewares.
 - JWT
