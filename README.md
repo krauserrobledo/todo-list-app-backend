@@ -33,14 +33,6 @@
 
 *Modified Models for Identity implementation.
 
-- Abstractions Folder on Application Project Containning Repository Interfaces for Repository Pattern Moved To Domain Project to solve dependency Cycle.
-
-  - ICategoryRepository
-  - ISubTaskRepository
-  - ITagRepository
-  - ITaskRepository
-  - IuserRepository (Deleted)
-
 # ***5. Data Layer.***
 
 - AppDbContext file created inside Data layer.
@@ -84,12 +76,11 @@
 - Identity Folder added to contain Application user model
 
 - Migrations folder generated in this Layer for Data Base Migration.
-
-- Abstractions/ITokenService.cs moved from Appplication project to solve Dependency Cycle.
+  
 
 # ***6. Application Layer.***
 	
-- Abstractions Folder on Application Project Containning Repository Interfaces for Repository Pattern. (Moved To Domain Project to solve dependency Cycle)
+- Abstractions Folder on Application Project Containning Repository Interfaces for Repository Pattern.
 
   - ICategoryRepository
   - ISubTaskRepository
@@ -126,12 +117,34 @@
     - Microsoft.EntityFrameworkCore.
     - Microsoft.EntityFrameworkCore.Tools
 
-# ***8. Next Week´s Sprint (10/20)***
+# *** Next Week´s Sprint (10/20)***
 
+- JWT
 - Solve DEPENDENCY CYCLE between Application and Data.
 - Modificate Repositories for Linq Qeries addition.
 - Middlewares.
-- JWT
 - Minimal API Controllers Based.
-- Start Angular Learning. 	
-	
+- Start Angular Learning.
+
+# *** JWT ***
+
+- Add configurations in appsetting.json.
+- Interface ITokenService.cs creation in Data/Abstractions.
+- implementing interface TokenService.cs in Data/Services.
+- JWT configuration in Program.cs(Authentication, DI and Middleware)
+- Auth endpoints and DTO's creation.
+- Identity integration.
+
+# *** Solving Dependency Cycle ***
+
+- Abstractions Folder on Application Project Containning Repository Interfaces for Repository Pattern Moved To Domain Project to solve dependency Cycle.
+
+  - ICategoryRepository.
+  - ISubTaskRepository.
+  - ITagRepository.
+  - ITaskRepository.
+ 
+- Abstractions/ITokenService.cs moved from Appplication project to solve Dependency Cycle.
+
+- Services/TokenService.cs moved from Application Layer to solve dependency Cycle.
+
