@@ -89,6 +89,7 @@
   - IuserRepository (Deleted)
   - ITokenService
 
+
 # ***7. Minimal API.***
 
   - This project is set as single startup project in Solution.
@@ -117,6 +118,7 @@
     - Microsoft.EntityFrameworkCore.
     - Microsoft.EntityFrameworkCore.Tools
 
+
 # ***Next Week´s Sprint (10/20)***
 
 - JWT
@@ -135,6 +137,7 @@
 - Auth endpoints and DTO's creation.
 - Identity integration.
 
+
 # ***Solving Dependency Cycle***
 
 - Abstractions Folder on Application Project Containning Repository Interfaces for Repository Pattern Moved To Domain Project to solve dependency Cycle.
@@ -148,14 +151,30 @@
 
 - Services/TokenService.cs moved from Application Layer to solve dependency Cycle.
 
-  # ***Linq Queries***
 
-  - All Repositories classes were modified to implement LINQ syntax queries
+# ***Linq Queries***
+
+- All Repositories classes were modified to implement LINQ syntax queries
+
  
-  # ***Middleware***
+# ***Middleware***
 
-  - Middleware folder created in minimal api Layer.
-  - Created ExceptionHandlingMiddleware.cs for global exception handler.
-  - Created RequestLoginMiddleware to help in console debug.
-  - Middleware Registered in program.cs
+- Middleware folder created in minimal api Layer.
+- Created ExceptionHandlingMiddleware.cs for global exception handler.
+- Created RequestLoginMiddleware to help in console debug.
+- Middleware Registered in program.cs
 
+
+# ***Minimal API Controller Based***
+
+- DTO Folder Creation containning DTO files used in endpoints.
+- Endpoints Folder Created to contain endpoint files.
+- Created Minimal API Endpoints files using repositories and DTO.
+
+
+# ***Documentation***
+
+- Installed NuGet package Swashbuckle.AspNetCore to generate API documentation.
+- Configurations Added in Program.cs
+- added Endpoints annotations modifing with sintax methods(summary, tags...)
+- Tried endpoints with Swagger help
