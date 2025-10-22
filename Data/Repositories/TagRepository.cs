@@ -5,15 +5,10 @@ using Task = System.Threading.Tasks.Task;
 
 namespace Data.Repositories
 {
-    public class TagRepository : ITagRepository
+    public class TagRepository(AppDbContext context) : ITagRepository
     {
 
-        private readonly AppDbContext _context;
-        
-        public TagRepository(AppDbContext context)
-        {
-            _context = context;
-        }
+        private readonly AppDbContext _context = context;
 
         public async Task<Tag> CreateTag(Tag tag)
         {

@@ -4,15 +4,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Data.Repositories
 {
-    public class SubtaskRepository : ISubtaskRepository
+    public class SubtaskRepository(AppDbContext context) : ISubtaskRepository
     {
         // DB Context
-        private readonly AppDbContext _context;
-        // Dependency Injection of DbContext
-        public SubtaskRepository(AppDbContext context)
-        {
-            _context = context;
-        }
+        private readonly AppDbContext _context = context;
+
         public async Task<Subtask> CreateSubtask(Subtask subtask)
         {
             // Validation using LINQ

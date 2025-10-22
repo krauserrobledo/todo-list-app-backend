@@ -18,7 +18,7 @@
             _logger.LogInformation("Starting request: {Method} {Path}",
                 context.Request.Method, context.Request.Path);
 
-            await _next(context);  // ← Pasar al siguiente middleware
+            await _next(context);
 
             var duration = DateTime.UtcNow - startTime;
             _logger.LogInformation("Completed request: {Method} {Path} - {StatusCode} in {Duration}ms",

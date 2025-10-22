@@ -15,6 +15,7 @@ namespace MinimalApi.Endpoints
             group.MapPost("/register", Register);
             group.MapPost("/login", Login);
             group.MapPost("/validate", ValidateToken);
+
         }
 
         private static async Task<IResult> Register(

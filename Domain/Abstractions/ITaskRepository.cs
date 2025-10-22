@@ -4,12 +4,9 @@ namespace Domain.Abstractions
 {
     public interface ITaskRepository
     {
-        // Get all tasks for a specific user
+        // Get tasks
         Task<ICollection<Tasks>> GetTasksByUser(string userId);
         Task<ICollection<Tasks>> GetTasksByUserWithDetails(string userId); // with categories and tags
-
-        // Get tasks with related entities
-        Task<ICollection<Tasks>> GetTasksWithCategoriesAndTags(string userId);
         Task<Tasks?> GetTaskWithDetails(string taskId);
 
         // Manage relationships
@@ -23,5 +20,8 @@ namespace Domain.Abstractions
         Task<Tasks> CreateTask(Tasks task);
         Task<Tasks?> UpdateTask(Tasks task);
         Task<bool> DeleteTask(string taskId);
+
+        //check if task title exists for a user
+        Task<bool> TaskTitleExists(string title, string userId);
     }
 }

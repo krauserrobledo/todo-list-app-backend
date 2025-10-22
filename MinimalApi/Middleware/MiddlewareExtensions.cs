@@ -9,7 +9,7 @@
         }
         public static IApplicationBuilder UseRequestLogginMiddleware(this IApplicationBuilder builder)
         {
-            return builder.UseMiddleware<RequestLogginMiddleware>();
+            return builder.UseMiddleware<RequestLoggingMiddleware>();
         }
     }
 }
