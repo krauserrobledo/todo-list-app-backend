@@ -16,6 +16,6 @@ namespace Domain.Abstractions
         Task<bool> CategoryExists(string categoryId);
         Task<bool> CategoryNameExists(string name, string userId);
 
-        
+
     }
 }
