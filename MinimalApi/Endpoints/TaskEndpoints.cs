@@ -313,14 +313,15 @@ namespace MinimalApi.Endpoints
             }
         }
         /// <summary>
-        /// 
+        /// Removes a category from a specified task.
         /// </summary>
-        /// <param name="taskId"></param>
-        /// <param name="categoryId"></param>
-        /// <param name="taskRepository"></param>
-        /// <param name="categoryRepository"></param>
-        /// <param name="context"></param>
-        /// <returns></returns>
+        /// <remarks>This method checks for the existence of both the task and category before
+        /// <param name="taskId">Id to determine a Tag</param>
+        /// <param name="categoryId">Id for Categories</param>
+        /// <param name="taskRepository">Task REpository class</param>
+        /// <param name="categoryRepository"> Category Repository class</param>
+        /// <param name="context">HTTP context</param>
+        /// <returns>NotFound, Problem, Error</returns>
         private static async Task<IResult> RemoveCategoryFromTask(
             string taskId, 
             string categoryId,
@@ -353,14 +354,15 @@ namespace MinimalApi.Endpoints
             }
         }
         /// <summary>
-        /// 
+        /// Removes Tag from a Task
         /// </summary>
-        /// <param name="tagId"></param>
-        /// <param name="taskId"></param>
-        /// <param name="tagRepository"></param>
-        /// <param name="taskRepository"></param>
-        /// <param name="context"></param>
-        /// <returns></returns>
+        /// <remarks> Validate entities before deleting</remarks>
+        /// <param name="tagId">Id for tags</param>
+        /// <param name="taskId"> Id for Task</param>
+        /// <param name="tagRepository">Repository class for Tags</param>
+        /// <param name="taskRepository">Repository class for Task</param>
+        /// <param name="context">HTTP context</param>
+        /// <returns> Ok, NotFound, Unauthorized</returns>
         private static async Task<IResult> RemoveTagFromTask(
             string tagId,
             string taskId,
@@ -393,14 +395,15 @@ namespace MinimalApi.Endpoints
             }
         }
         /// <summary>
-        /// 
+        /// Adds a category to a specified task.
         /// </summary>
-        /// <param name="taskId"></param>
-        /// <param name="categoryId"></param>
-        /// <param name="taskRepository"></param>
-        /// <param name="categoryRepository"></param>
-        /// <param name="context"></param>
-        /// <returns></returns>
+        /// <remarks>This method checks for the existence of both the task and category before adding the category to the task.</remarks>
+        /// <param name="taskId"> Id for a task</param>
+        /// <param name="categoryId">Id for a category</param>
+        /// <param name="taskRepository">Repository class for Task</param>
+        /// <param name="categoryRepository">Repository class for Category</param>
+        /// <param name="context">HTTP context</param>
+        /// <returns> Unauthorized, NotFound, Problem, Ok</returns>
         private static async Task<IResult> AddCategoryToTask(
             string taskId, 
             string categoryId,
@@ -435,14 +438,15 @@ namespace MinimalApi.Endpoints
             }
         }
         /// <summary>
-        /// 
+        /// Adds a tag to a specified task.
         /// </summary>
-        /// <param name="taskId"></param>
-        /// <param name="tagId"></param>
-        /// <param name="tagRepository"></param>
-        /// <param name="taskRepository"></param>
-        /// <param name="context"></param>
-        /// <returns></returns>
+        /// <remarks>This method checks for the existence of both the task and tag before adding the tag to the task.</remarks>
+        /// <param name="taskId">Id references Task</param>
+        /// <param name="tagId">Id references Tag</param>
+        /// <param name="tagRepository">Repository class for Tags</param>
+        /// <param name="taskRepository">Repository class for Task</param>
+        /// <param name="context">HTTP context</param>
+        /// <returns> NotFound, Ok, Unauthorized, Problem</returns>
         private static async Task<IResult> AddTagToTask(
             string taskId,
             string tagId,

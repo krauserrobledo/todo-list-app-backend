@@ -5,9 +5,15 @@ using MinimalApi.DTOs;
 
 namespace MinimalApi.Endpoints
 {
+    /// <summary>
+    /// Endpoints for managing categories.
+    /// </summary>
     public static class CategoryEndpoints
     {
-
+        /// <summary>
+        /// Configures the API endpoints for category-related operations.
+        /// </summary>
+        /// <param name="app"> </param>
         public static void MapCategoryEndpoints(this IEndpointRouteBuilder app)
         {
             var group = app.MapGroup("/api/categories")
@@ -25,10 +31,18 @@ namespace MinimalApi.Endpoints
             group.MapGet("/{id}", GetCategoryById)
                 .WithSummary("Get a Category by ID")
                 .RequireAuthorization();                
-            group.MapGet("/user/{userId}", GetCategoriesByUser)
+            group.MapGet("/user/", GetCategoriesByUser)
                 .WithSummary("Get Categories by User ID")
                 .RequireAuthorization();
         }
+        /// <summary>
+        /// Creates a new category.
+        /// </summary>
+        /// <remarks>Validates the request and ensures the category name is unique for the user before creation.</remarks>
+        /// <param name="request">The category creation request.</param>
+        /// <param name="categoryRepository">The category repository.</param>
+        /// <param name="context">The HTTP context.</param>
+        /// <returns>A result indicating the outcome of the category creation.</returns>
         private static async Task<IResult> CreateCategory(
             [FromBody] CategoryCreateDTO request,
             ICategoryRepository categoryRepository,
@@ -74,7 +88,15 @@ namespace MinimalApi.Endpoints
                 return Results.Problem($"Error while creating Category: {ex.Message}");
             }
         }
-
+        /// <summary>
+        /// Updates an existing category.
+        /// </summary>
+        /// <remarks>Validates the request, checks for category existence, and ensures the category name is unique for the user before updating.</remarks>
+        /// <param name="id">The ID of the category to update.</param>
+        /// <param name="request">The category update request.</param>
+        /// <param name="categoryRepository">The category repository.</param>
+        /// <param name="context">The HTTP context.</param>
+        /// <returns>A result indicating the outcome of the category update.</returns>
         private static async Task<IResult> UpdateCategory(
             string id,
             [FromBody] CategoryUpdateDTO request,
@@ -84,7 +106,6 @@ namespace MinimalApi.Endpoints
             // Logic to update a category
             try
             {
-                
                 // Check if exists 
                 var existingCategory = await categoryRepository.GetCategoryById(id);
                 if (existingCategory == null)
@@ -101,12 +122,17 @@ namespace MinimalApi.Endpoints
                 {
                     return Results.Conflict("A category with the same name already exists for this user.");
                 }
+                existingCategory.Name = request.Name ?? existingCategory.Name;
                 // Color Validation
-
-                existingCategory.Name = request.Name;
-
-                existingCategory.Color = request.Color;
-
+                if (!Data.Tools.Validations.IsValidHexColor(request.Color))
+                {
+                    // If invalid, set to default white
+                    existingCategory.Color = "#FFFFFF";
+                }
+                else
+                {
+                    existingCategory.Color = request.Color;
+                }
                 // Update in repository
                 var updatedCategory = await categoryRepository.UpdateCategory(existingCategory);
                 if (updatedCategory == null)
@@ -126,7 +152,14 @@ namespace MinimalApi.Endpoints
                 return Results.Problem($"Error while updating Category{ex.Message}");
             }
         }
-
+        /// <summary>
+        /// Deletes a category by ID.
+        /// </summary>
+        /// <remarks>Verifies the category existence before deletion.</remarks>
+        /// <param name="id">The ID of the category to delete.</param>
+        /// <param name="categoryRepository">The category repository.</param>
+        /// <param name="context">The HTTP context.</param>
+        /// <returns>Results indicating the outcome of the deletion.</returns>
         private static async Task<IResult> DeleteCategory(
             string id,
             ICategoryRepository categoryRepository,
@@ -153,8 +186,15 @@ namespace MinimalApi.Endpoints
             {
                 return Results.Problem($"Error while deleting Category: {ex.Message}");
             }
-
         }
+        /// <summary>
+        /// Gets a category by ID.
+        /// </summary>
+        /// <remarks>Retrieves a category based on the provided ID.</remarks>
+        /// <param name="id">Category Id</param>
+        /// <param name="categoryRepository"> Repository class for category</param>
+        /// <param name="context"> HTTP context</param>
+        /// <returns>Categories collection with details if exists or valid</returns>
         private static async Task<IResult> GetCategoryById(
             string id,
             ICategoryRepository categoryRepository,
@@ -180,18 +220,24 @@ namespace MinimalApi.Endpoints
                 return Results.Problem($"Error while retrieving Category: {ex.Message}");
             }
         }
+        /// <summary>
+        /// Gets categories by user ID.
+        /// </summary>
+        /// <remarks>Retrieves all categories associated with the authenticated user.</remarks>
+        /// <param name="categoryRepository">Category Repository class implementing interface </param>
+        /// <param name="context">HTTP context</param>
+        /// <returns> categories for an user by context</returns>
         private static async Task<IResult> GetCategoriesByUser(
             ICategoryRepository categoryRepository,
             HttpContext context)
-
         {
             // Logic to get categories by user
             try
             {
                 // Check user 
                 var userId = context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-                
-                var categories = await categoryRepository.GetCategoriesByUser(userId);
+                ICollection<Category> categories = await categoryRepository.GetCategoriesByUser(userId);
+                // Return response
                 return Results.Ok(categories.Select(c => new
                 {
                     id = c.Id,

@@ -14,7 +14,6 @@ using MinimalApi.Middleware;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-
 // Add services to the container.
 // Swagger configuration
 builder.Services.AddEndpointsApiExplorer();
@@ -31,7 +30,6 @@ builder.Services.AddSwaggerGen(options =>
             Email = "al.daniel.robledo.lobato@iesportada.org"
         }
     });
-
     // JWT Configuration for Swagger
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
@@ -41,7 +39,6 @@ builder.Services.AddSwaggerGen(options =>
         Type = SecuritySchemeType.ApiKey,
         Scheme = "Bearer"
     });
-
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
@@ -53,11 +50,10 @@ builder.Services.AddSwaggerGen(options =>
                     Id = "Bearer"
                 }
             },
-            new string[] {}
+            Array.Empty<string>()
         }
     });
 });
-
 // Add DbContext with SQL Server provider
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -72,16 +68,12 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 })
 .AddEntityFrameworkStores<AppDbContext>()
 .AddDefaultTokenProviders();
-
 // Repositories DI
 builder.Services.AddScoped<ITaskRepository, TaskRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ITagRepository, TagRepository>();
 builder.Services.AddScoped<ISubtaskRepository, SubtaskRepository>();
-
-
 // Minimal API Services DI
-
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
@@ -108,16 +100,11 @@ builder.Services.AddAuthentication(options =>
         ClockSkew = TimeSpan.Zero
     };
 });
-
 builder.Services.AddAuthorization();
-
 // Token Service DI
 builder.Services.AddScoped<ITokenService, TokenService>();
-
 var app = builder.Build();
-
 // Configure the HTTP request pipeline.
-
 // Swagger Middleware
 app.UseSwagger();
 app.UseSwaggerUI(options =>
@@ -127,25 +114,17 @@ app.UseSwaggerUI(options =>
 });
 // HTTPS Middleware
 app.UseHttpsRedirection();
-
 // Custom Middlewares
 app.UseExceptionHandlingMiddleware();
-app.UseRequestLogginMiddleware();
-
+app.UseRequestLoggingMiddleware();
 // JWT Middleware
 app.UseAuthentication();
 // Auth Middleware
 app.UseAuthorization();
-
-
-
 // Map Endpoints
 app.MapAuthEndpoints();
 app.MapTaskEndpoints();
 app.MapTagEndpoints();
 app.MapCategoryEndpoints();
 app.MapSubtaskEndpoints();
-
-
 app.Run();
-

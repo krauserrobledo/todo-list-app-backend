@@ -7,19 +7,20 @@ using Tasks = Domain.Models.Task;
 namespace Data.Repositories
 {
     /// <summary>
-    /// 
+    /// Concrete implementation of ITaskRepository using Entity Framework Core.
     /// </summary>
-    /// <param name="context"></param>
-      public class TaskRepository(AppDbContext context) : ITaskRepository
+    /// <param name="context">HTTP context</param>
+    public class TaskRepository(AppDbContext context) : ITaskRepository
     {
         // Dependency Injection of AppDbContext
         private readonly AppDbContext _context = context;
         /// <summary>
-        /// 
+        /// Creates a new task.
         /// </summary>
-        /// <param name="task"></param>
-        /// <returns></returns>
-        /// <exception cref="InvalidOperationException"></exception>
+        /// <remarks> Validates before creating a Task</remarks>
+        /// <param name="task"> Task model</param>
+        /// <returns>Task</returns>
+        /// <exception cref="InvalidOperationException">Thrown when a task with the same title already exists for the user.</exception>
         public async Task<Tasks> CreateTask(Tasks task)
         {
             // Validate input and check for duplicate
@@ -40,10 +41,11 @@ namespace Data.Repositories
             return task;
         }
         /// <summary>
-        /// 
+        /// Updates an existing task.
         /// </summary>
-        /// <param name="task"></param>
-        /// <returns></returns>
+        /// <remarks> Validates before updating a Task</remarks>
+        /// <param name="task"> Task entity</param>
+        /// <returns> Existing Task</returns>
         public async Task<Tasks?> UpdateTask(Tasks task)
         {
             // Validate input using LINQ
@@ -65,10 +67,11 @@ namespace Data.Repositories
             return existingTask;
         }
         /// <summary>
-        /// 
+        /// Deletes a task by its ID.
         /// </summary>
-        /// <param name="taskId"></param>
-        /// <returns></returns>
+        /// <remarks> Validates before deleting a Task</remarks>
+        /// <param name="taskId">Id for a task</param>
+        /// <returns>Boolean value </returns>
         public async Task<bool> DeleteTask(string taskId)
         {
             // Get task using LINQ
@@ -83,10 +86,11 @@ namespace Data.Repositories
             return false;
         }
         /// <summary>
-        /// 
+        /// Gets a task by its ID.
         /// </summary>
-        /// <param name="taskId"></param>
-        /// <returns></returns>
+        /// <remarks> Retrieves a Task by ID</remarks>
+        /// <param name="taskId">Id for a task</param>
+        /// <returns> Existing Task</returns>
         public async Task<Tasks?> GetTaskById(string taskId)
         {
             // Get task using LINQ
@@ -94,10 +98,10 @@ namespace Data.Repositories
                 .FirstOrDefaultAsync(t => t.Id == taskId);
         }
         /// <summary>
-        /// 
+        /// Gets tasks by user ID.
         /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
+        /// <param name="userId"> User Identification</param>
+        /// <returns>List of Tasks</returns>
         public async Task<ICollection<Tasks>> GetTasksByUser(string userId)
         {
             // Get tasks using LINQ
@@ -106,10 +110,11 @@ namespace Data.Repositories
                 .ToListAsync();
         }
         /// <summary>
-        /// 
+        /// Gets tasks by user ID with related details.
         /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
+        /// <remarks> Retrieves tasks along with their related entities for a specific user</remarks>
+        /// <param name="userId"> User identification</param>
+        /// <returns> Task list by user id</returns>
         public async Task<ICollection<Tasks>> GetTasksByUserWithDetails(string userId)
         {
             // get tasks with related entities using LINQ
@@ -124,11 +129,11 @@ namespace Data.Repositories
             return tasks;
         }
         /// <summary>
-        /// 
+        /// Gets a task by its ID with related details.
         /// </summary>
-        /// <param name="taskId"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentException"></exception>
+        /// <param name="taskId">Id for a task</param>
+        /// <returns>Task with related details</returns>
+        /// <exception cref="ArgumentException">Thrown when taskId is null or empty</exception>
         public async Task<Tasks?> GetTaskWithDetails(string taskId)
         {
             // Validate input
@@ -147,12 +152,13 @@ namespace Data.Repositories
             return task;
         }
         /// <summary>
-        /// 
+        /// Gets a task by its ID with related details.
         /// </summary>
-        /// <param name="taskId"></param>
-        /// <param name="categoryId"></param>
-        /// <returns></returns>
-        /// <exception cref="InvalidOperationException"></exception>
+        /// <remarks> Removes category from task after validating association</remarks>
+        /// <param name="taskId">Id for a task</param>
+        /// <param name="categoryId">Id for a category</param>
+        /// <returns>Task with related details</returns>
+        /// <exception cref="InvalidOperationException">Thrown when the category is not associated with the task.</exception>
         public async Task RemoveCategoryFromTask(string taskId, string categoryId)
         {
             // Validate input AND association using LINQ
@@ -165,12 +171,13 @@ namespace Data.Repositories
 
         }
         /// <summary>
-        /// 
+        /// Removes a tag from a task after validating association.
         /// </summary>
-        /// <param name="taskId"></param>
-        /// <param name="tagId"></param>
-        /// <returns></returns>
-        /// <exception cref="InvalidOperationException"></exception>
+        /// <remarks> Removes tag from task after validating association</remarks>
+        /// <param name="taskId">Id for a task</param>
+        /// <param name="tagId">Id for a tag</param>
+        /// <returns>Task with related details</returns>
+        /// <exception cref="InvalidOperationException">Thrown when the tag is not associated with the task.</exception>
         public async Task RemoveTagFromTask(string taskId, string tagId)
         {
             // Validate association using LINQ
@@ -182,12 +189,13 @@ namespace Data.Repositories
             await _context.SaveChangesAsync();
         }
         /// <summary>
-        /// 
+        /// Gets a task by its ID with related details.
         /// </summary>
-        /// <param name="taskId"></param>
-        /// <param name="categoryId"></param>
-        /// <returns></returns>
-        /// <exception cref="InvalidOperationException"></exception>
+        /// <remarks> Adds category to task after validating association</remarks>
+        /// <param name="taskId">Id for a task</param>
+        /// <param name="categoryId">Id for a category</param>
+        /// <returns>Task with related details</returns>
+        /// <exception cref="InvalidOperationException">Thrown when the category is not associated with the task.</exception>
         public async Task AddCategoryToTask(string taskId, string categoryId)
         {
             // Validate association using LINQ
@@ -207,12 +215,12 @@ namespace Data.Repositories
             return;
         }
         /// <summary>
-        /// 
+        /// Gets a task by its ID with related details.
         /// </summary>
-        /// <param name="taskId"></param>
-        /// <param name="tagId"></param>
-        /// <returns></returns>
-        /// <exception cref="InvalidOperationException"></exception>
+        /// <param name="taskId">Id for a task</param>
+        /// <param name="tagId">Id for a tag</param>
+        /// <returns>Task with related details</returns>
+        /// <exception cref="InvalidOperationException">Thrown when the tag is not associated with the task.</exception>
         public async Task AddTagToTask(string taskId, string tagId)
         {
             // Validate input and association using LINQ
@@ -232,11 +240,12 @@ namespace Data.Repositories
             return;
         }
         /// <summary>
-        /// 
+        /// Checks if a task title exists for a specific user.
         /// </summary>
-        /// <param name="title"></param>
-        /// <param name="userId"></param>
-        /// <returns></returns>
+        /// <remarks> Validates if task title exists for a user</remarks>
+        /// <param name="title">The title of the task.</param>
+        /// <param name="userId">Id for user</param>
+        /// <returns>Boolean value</returns>
         public async Task<bool> TaskTitleExists(string title, string userId)
         {
             return await _context.Tasks
