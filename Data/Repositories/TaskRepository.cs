@@ -26,14 +26,13 @@ namespace Data.Repositories
         /// <exception cref="InvalidOperationException">Thrown when a task with the same title already exists for the user.</exception>
         public async Task<Tasks> CreateTask(Tasks task)
         {
-
             // Validate input and check if exists using LINQ
-            var existingTask = await _context.Tasks
-                .FirstOrDefaultAsync(t => t.Title == task.Title && t.UserId == task.UserId);
 
-            if (existingTask != null)
+            var existingTitle = await TaskTitleExists(task.Title, task.UserId);
 
-                throw new InvalidOperationException("A task with the same title already exists for this user.");
+            if (existingTitle)
+                throw new InvalidOperationException("Task Title already exists.");
+
 
             // Status validtion
             if (!Domain.Constants.TaskStatus.IsValid(task.Status))
@@ -300,9 +299,10 @@ namespace Data.Repositories
         /// <returns>Boolean value</returns>
         public async Task<bool> TaskTitleExists(string title, string userId)
         {
+            var lowTitle = title.ToLower();
 
             return await _context.Tasks
-                .AnyAsync(t => t.Title.Equals(title, StringComparison.CurrentCultureIgnoreCase) && t.UserId == userId);
+                .AnyAsync(t => t.Title.ToLower() ==  lowTitle && t.UserId == userId);
         }
     }
 }

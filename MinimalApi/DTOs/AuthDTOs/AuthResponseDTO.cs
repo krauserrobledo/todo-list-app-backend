@@ -2,7 +2,7 @@
 
 {
     // DTO for authentication response
-    public record AuthResponse
+    public record AuthResponseDTO
         (
 
         string Token,

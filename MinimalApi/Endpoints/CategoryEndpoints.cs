@@ -220,6 +220,7 @@ namespace MinimalApi.Endpoints
                 return Results.Problem($"Error while retrieving Category: {ex.Message}");
             }
         }
+
         /// <summary>
         /// Gets categories by user ID.
         /// </summary>
@@ -238,6 +239,9 @@ namespace MinimalApi.Endpoints
                 var userId = context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
                 ICollection<Category> categories = await categoryRepository.GetCategoriesByUser(userId);
                 // Return response
+                if (userId == null)
+                    return Results.Unauthorized();
+
                 return Results.Ok(categories.Select(c => new
                 {
                     id = c.Id,

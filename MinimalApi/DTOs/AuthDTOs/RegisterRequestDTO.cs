@@ -1,12 +1,13 @@
 ﻿namespace MinimalApi.DTOs.AuthDTOs
 
 {
-    // DTO for login request
-    public record LoginRequest
+    // DTO for registration request
+    public record RegisterRequestDTO
         (
 
         string Email,
 
         string Password
         );
+
 }

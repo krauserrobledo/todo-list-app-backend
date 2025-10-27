@@ -36,7 +36,7 @@ namespace MinimalApi.Endpoints
         /// <param name="tokenService">The token service for generating JWT tokens.</param>
         /// <returns>A result indicating the outcome of the registration.</returns>
         private static async Task<IResult> Register(
-            [FromBody] RegisterRequest request,
+            [FromBody] RegisterRequestDTO request,
             UserManager<ApplicationUser> userManager,
             ITokenService tokenService)
         {
@@ -58,7 +58,7 @@ namespace MinimalApi.Endpoints
             // Generate token
             var token = tokenService.GenerateToken(user);
             // Return response 
-            return Results.Ok(new AuthResponse(
+            return Results.Ok(new AuthResponseDTO(
                 token,
                 user.Email!));
         }
@@ -71,7 +71,7 @@ namespace MinimalApi.Endpoints
         /// <param name="tokenService">The token service for generating JWT tokens.</param>
         /// <returns>A result indicating the outcome of the login.</returns>
         private static async Task<IResult> Login(
-            [FromBody] LoginRequest request,
+            [FromBody] LoginRequestDTO request,
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             ITokenService tokenService)
@@ -86,7 +86,7 @@ namespace MinimalApi.Endpoints
             // Generate token
             var token = tokenService.GenerateToken(user);
             // Return response
-            return Results.Ok(new AuthResponse(
+            return Results.Ok(new AuthResponseDTO(
                 token,
                 user.Email!));
         }
@@ -97,7 +97,7 @@ namespace MinimalApi.Endpoints
         /// <param name="tokenService">The token service for validating JWT tokens.</param>
         /// <returns>A result indicating whether the token is valid.</returns>
         private static IResult ValidateToken(
-            [FromBody] ValidateTokenRequest request,
+            [FromBody] ValidateTokenRequestDTO request,
             ITokenService tokenService)
         {
             var principal = tokenService.ValidateToken(request.Token);
