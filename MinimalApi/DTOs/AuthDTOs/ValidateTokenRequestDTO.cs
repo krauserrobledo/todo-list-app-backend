@@ -2,7 +2,7 @@
 
 {
     // DTO for token validation request
-    public record ValidateTokenRequest
+    public record ValidateTokenRequestDTO
         (
 
         string Token

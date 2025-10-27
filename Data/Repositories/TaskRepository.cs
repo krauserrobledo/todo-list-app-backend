@@ -44,8 +44,8 @@ namespace Data.Repositories
         /// <exception cref="InvalidOperationException">Thrown when a task with the same title already exists for the user.</exception>
         public async Task<Tasks> CreateTask(Tasks task)
         {
-
             // Validate input and check if exists using LINQ
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
         /// <summary>
@@ -62,9 +62,15 @@ namespace Data.Repositories
 >>>>>>> 3b811eb (refactor: improve code organization)
             var existingTask = await _context.Tasks
                 .FirstOrDefaultAsync(t => t.Title == task.Title && t.UserId == task.UserId);
+=======
+>>>>>>> 0d00488 (fix(dtos):responsibility separation)
 
-            if (existingTask != null)
+            var existingTitle = await TaskTitleExists(task.Title, task.UserId);
 
+            if (existingTitle)
+                throw new InvalidOperationException("Task Title already exists.");
+
+<<<<<<< HEAD
                 throw new InvalidOperationException("A task with the same title already exists for this user.");
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -81,6 +87,8 @@ namespace Data.Repositories
         }
 >>>>>>> 9b74040 (refactor: clean code and documentation)
 =======
+=======
+>>>>>>> 0d00488 (fix(dtos):responsibility separation)
 
             // Status validtion
             if (!Domain.Constants.TaskStatus.IsValid(task.Status))
@@ -527,9 +535,10 @@ namespace Data.Repositories
 >>>>>>> 3b811eb (refactor: improve code organization)
         public async Task<bool> TaskTitleExists(string title, string userId)
         {
+            var lowTitle = title.ToLower();
 
             return await _context.Tasks
-                .AnyAsync(t => t.Title.Equals(title, StringComparison.CurrentCultureIgnoreCase) && t.UserId == userId);
+                .AnyAsync(t => t.Title.ToLower() ==  lowTitle && t.UserId == userId);
         }
     }
 }

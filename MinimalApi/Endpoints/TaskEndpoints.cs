@@ -70,21 +70,24 @@ namespace MinimalApi.Endpoints
                 // Validate request
                 if (string.IsNullOrWhiteSpace(request.Title))
                     return Results.BadRequest("Task title is required.");
+
                 // Get user ID from context
                 var userId = context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
                 if (string.IsNullOrEmpty(userId))
                     return Results.Unauthorized();
+
                 // Check for duplicate task title for the same user
                 var titleExists = await taskRepository.TaskTitleExists(request.Title.Trim(), userId);
                 if (titleExists)
                 {
                     return Results.Conflict("A task with the same title already exists for this user.");
                 }
+
                 // Validate status
                 if (!Domain.Constants.TaskStatus.IsValid(request.Status))
-                {
+                
                     return Results.BadRequest("Invalid task status.");
-                }
+                
                 // Create new Task entity
                 var newTask = new Domain.Models.Task
                 {
@@ -95,8 +98,10 @@ namespace MinimalApi.Endpoints
                     Status = request.Status,
                     UserId = userId
                 };
+
                 // Save to repository
                 var createdTask = await taskRepository.CreateTask(newTask);
+
                 // Return success response
                 return Results.Created($"/api/tasks/{createdTask.Id}", new
                 {
@@ -152,6 +157,7 @@ namespace MinimalApi.Endpoints
                 existingTask.Description = request.Description ?? existingTask.Description;
                 existingTask.DueDate = request.DueDate ?? existingTask.DueDate;
                 existingTask.Status = request.Status ?? existingTask.Status;
+
                 // Update in repository
                 var updatedTask = await taskRepository.UpdateTask(existingTask);
                 if (updatedTask == null)
