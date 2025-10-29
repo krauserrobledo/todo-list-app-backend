@@ -27,11 +27,50 @@ namespace Data.Repositories
         public async Task<Tasks> CreateTask(Tasks task)
         {
             // Validate input and check if exists using LINQ
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="task"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        public async Task<Tasks> CreateTask(Tasks task)
+        {
+            // Validate input and check for duplicate
+>>>>>>> 9b74040 (refactor: clean code and documentation)
+=======
+>>>>>>> 3b811eb (refactor: improve code organization)
+            var existingTask = await _context.Tasks
+                .FirstOrDefaultAsync(t => t.Title == task.Title && t.UserId == task.UserId);
+=======
+>>>>>>> 0d00488 (fix(dtos):responsibility separation)
 
             var existingTitle = await TaskTitleExists(task.Title, task.UserId);
 
             if (existingTitle)
                 throw new InvalidOperationException("Task Title already exists.");
+
+<<<<<<< HEAD
+                throw new InvalidOperationException("A task with the same title already exists for this user.");
+<<<<<<< HEAD
+<<<<<<< HEAD
+
+            // Status validtion
+=======
+>>>>>>> 9b74040 (refactor: clean code and documentation)
+            if (!Domain.Constants.TaskStatus.IsValid(task.Status))
+            
+                task.Status = Domain.Constants.TaskStatus.NonStarted;
+<<<<<<< HEAD
+
+=======
+        }
+>>>>>>> 9b74040 (refactor: clean code and documentation)
+=======
+=======
+>>>>>>> 0d00488 (fix(dtos):responsibility separation)
 
 
             // Status validtion
