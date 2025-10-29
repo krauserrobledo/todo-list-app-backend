@@ -1,4 +1,4 @@
-﻿using Domain.Abstractions;
+﻿using Application.Abstractions.Repositories;
 using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using MinimalApi.DTOs.SubtaskDTOs;
