@@ -1,0 +1,26 @@
+namespace Domain.Models;
+
+/// <summary>
+/// Class representing a Task entity
+/// </summary>
+public class Task
+{
+    public required string Id { get; set; }
+
+    public required string UserId { get; set; }
+
+    public string Title { get; set; } = null!;
+
+    public string? Description { get; set; }
+
+    public DateTime? DueDate { get; set; }
+
+    public string Status { get; set; } = null!;
+
+    public virtual ICollection<Subtask> Subtasks { get; set; } = new List<Subtask>();
+
+    public virtual ICollection<TaskCategory> TaskCategories { get; set; } = new List<TaskCategory>();
+
+    public virtual ICollection<TaskTag> TaskTags { get; set; } = new List<TaskTag>();
+
+}
