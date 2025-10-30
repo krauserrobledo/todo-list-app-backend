@@ -43,7 +43,7 @@ namespace Data.Repositories
 
             // Update in DbContext and save changes
             await _context.SaveChangesAsync();
-            return existingCategory;
+            return category;
         }
 
         /// <summary>

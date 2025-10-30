@@ -7,6 +7,7 @@ namespace Application.Abstractions.Services
     /// </summary>
     public interface ICategoryService
     {
+
         // business logic for category management
         Task<Category> CreateCategory(string name, string? color, string userId);
 

@@ -10,20 +10,20 @@ namespace Domain.Abstractions.Repositories
     {
 
         // Get all tags with related entities
-        Task<ICollection<Tag>> GetTagsByUser(string userId);
+        Task<ICollection<Tag>> GetByUser(string userId);
 
-        Task<Tag?> GetTagById(string tagId);
+        Task<Tag?> GetById(string tagId);
 
-        Task<ICollection<Tag>> GetTagsByTask(string taskId, string userId);
+        Task<ICollection<Tag>> GetByTask(string taskId, string userId);
 
-        Task<bool> TagNameExists(string name, string userId);
+        Task<bool> NameExists(string name, string userId);
 
 
         // CRUD operations
-        Task<Tag> CreateTag(Tag tag);
+        Task<Tag> Create(Tag tag);
 
-        Task<Tag?> UpdateTag(Tag tag);
+        Task<Tag?> Update(Tag tag);
 
-        Task<bool> DeleteTag(string tagId);
+        Task<bool> Delete(string tagId);
     }
 }

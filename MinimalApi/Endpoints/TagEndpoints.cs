@@ -10,6 +10,8 @@ namespace MinimalApi.Endpoints
     /// </summary>
     public static class TagEndpoints
     {
+        private static string newTag;
+
         /// <summary>
         /// Configures the API endpoints for tag-related operations.
         /// </summary>

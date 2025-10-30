@@ -1,6 +1,6 @@
 ﻿using Application.Abstractions.Services;
-using Microsoft.AspNetCore.Mvc;
 using Application.DTOs.SubtaskDTOs;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MinimalApi.Endpoints
 {

@@ -1,4 +1,4 @@
-using Application.Abstractions.Repositories;
+using Domain.Abstractions.Repositories;
 using Data;
 using Data.Abstractions;
 using Data.Identity;

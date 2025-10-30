@@ -6,17 +6,16 @@ namespace Domain.Abstractions.Repositories
     {
 
         // Get all Categories with related entities
-        Task<ICollection<Subtask>> GetAllSubtasksByTask(string taskId);
+        Task<ICollection<Subtask>> GetAllByTask(string taskId);
 
-        Task<Subtask?> GetSubtaskById(string subtaskId);
-
+        Task<Subtask?> GetById(string subtaskId);
 
 
         // CRUD operations
-        Task<Subtask> CreateSubtask(Subtask subtask);
+        Task<Subtask> Create(Subtask subtask);
 
-        Task<Subtask?> UpdateSubtask(Subtask subtask);
+        Task<Subtask?> Update(Subtask subtask);
 
-        Task<bool> DeleteSubtask(string id);
+        Task<bool> Delete(string id);
     }
 }

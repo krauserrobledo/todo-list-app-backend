@@ -9,15 +9,9 @@ namespace Application.Services
     /// <summary>
     /// Service implementation for Category service interface 
     /// </summary>
-    public class CategoryService : ICategoryService
+    public class CategoryService(ICategoryRepository categoryRepository) : ICategoryService
     {
-        private readonly ICategoryRepository _categoryRepository;
-
-        // Constructor injection of repository
-        public CategoryService(ICategoryRepository categoryRepository)
-        {
-            _categoryRepository = categoryRepository;
-        }
+        private readonly ICategoryRepository _categoryRepository = categoryRepository;
 
         /// <summary>
         /// Creates a new category for a user. 
