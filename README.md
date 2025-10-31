@@ -43,22 +43,24 @@
 	- AppDbContext file created inside Data layer.
 	- Configurations added :
 
-	```
-	  protected override void OnModelCreating(ModelBuilder modelBuilder)
-	        {
-	            base.OnModelCreating(modelBuilder);
-	            
-	            modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
-	```
+```
+  protected override void OnModelCreating(ModelBuilder modelBuilder)
+		{
+			base.OnModelCreating(modelBuilder);
+			
+			modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+```
 
 	- AppDbContext modified to heredate IdentityDbContext.
 
 	- Nuget Packages :
+	
  		- Microsoft.EntityFrameworkCore.SqlServer. 
   		- Microsoft.EntityFrameworkCore.
   		- Microsoft.AspNetCore.Identity.EntityFrameworkCore.
 
 	- Repositories folder created containing implementation for repositories interfaces.
+	
 	  - CategoryRepository
 	  - SubTaskRepository
 	  - TagRepository
@@ -67,13 +69,14 @@
 		*Clases were modified to Identity implementation
 
 	- Configurations folder containing external entities configuration used in dbcontext :
-  	- CategoryConfiguration
-   	- SubTaskConfiguration
-	- TagConfiguration
-	- TaskConfiguration
-	- UserConfiguration (Deleted)
-	- TaskTagConfiguration
-	- TaskCategoryConfiguration
+	
+	  	- CategoryConfiguration
+	   	- SubTaskConfiguration
+		- TagConfiguration
+		- TaskConfiguration
+		- UserConfiguration (Deleted)
+		- TaskTagConfiguration
+		- TaskCategoryConfiguration
 
 	*Modified configurations to implement Identity User.
 
@@ -113,17 +116,18 @@
 	    
 	  - Repositories Dependency Injection register in Program.cs :
 
-	  ```
-	    builder.Services.AddScoped<ITaskRepository,TaskRepository>();
-	    builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-	    builder.Services.AddScoped<ITagRepository, TagRepository>();
-	    builder.Services.AddScoped<ISubTaskRepository, SubTaskRepository>();
-	  ```
+  ```
+	builder.Services.AddScoped<ITaskRepository,TaskRepository>();
+	builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+	builder.Services.AddScoped<ITagRepository, TagRepository>();
+	builder.Services.AddScoped<ISubTaskRepository, SubTaskRepository>();
+  ```
 
 	  - DbContext Dependency Injection register in Program.cs:
-	  ```
-	    builder.Services.AddDbContext<AppDbContext>();   
-	  ```
+	  
+  ```
+	builder.Services.AddDbContext<AppDbContext>();   
+  ```
 	
 	  - Dependency Injection for Identity implementation in Program.cs.
 	  
@@ -135,7 +139,7 @@
 	    - Microsoft.EntityFrameworkCore.
 	    - Microsoft.EntityFrameworkCore.Tools
 	
-	----
+----
 
 # *** Weekly Sprint (10/20)***
 
@@ -211,7 +215,7 @@
 	  - Created RequestLoginMiddleware to help in console debug.
 	  - Middleware Registered in program.cs
 	
-	----
+----
 
 # ***Weekly Sprint (10/27)***
 
@@ -320,6 +324,8 @@
 ### ***Build clean architecture Angular Project***
 
 	Research about structures layered in folders :
+	
+	https://gesarsystem.droblob93.es/login 
 
 		- Core
 		- Auth
