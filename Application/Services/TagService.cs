@@ -10,11 +10,11 @@ namespace Application.Services
     /// 
     /// </summary>
     /// <param name="tagRepository"></param>
-    public class TagService(ITagRepository tagRepository) : ITagService
+    public class TagService(ITagRepository tagRepository, ITaskRepository taskRepository) : ITagService
     {
 
-        private readonly ITagRepository _tagRepository;
-        private readonly ITaskRepository _taskRepository;
+        private readonly ITagRepository _tagRepository = tagRepository;
+        private readonly ITaskRepository _taskRepository = taskRepository;
 
         /// <summary>
         /// 

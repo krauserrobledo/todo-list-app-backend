@@ -179,9 +179,11 @@ namespace Data.Repositories
             var taskTag = await _context.TaskTags
                 .FirstOrDefaultAsync(tt => tt.TaskId == taskId && tt.TagId == tagId);
 
-            // Remove and save
-            _context.TaskTags.Remove(taskTag);
-            await _context.SaveChangesAsync();
+            if (taskTag != null)
+
+                // Remove and save
+                _context.TaskTags.Remove(taskTag);
+                await _context.SaveChangesAsync();
         }
 
         /// <summary>
@@ -219,10 +221,10 @@ namespace Data.Repositories
         {
 
             // Validate Task by Id
-            var task = await _context.Tasks.FindAsync(taskId);
+             await _context.Tasks.FindAsync(taskId);
 
             // Validate Tag by Id
-            var tag = await _context.Tags.FindAsync(tagId);
+            await _context.Tags.FindAsync(tagId);
 
             // Create new association
             var taskTag = new TaskTag()
@@ -248,7 +250,7 @@ namespace Data.Repositories
         {
 
             return await _context.Tasks
-                .AnyAsync(t => t.Title.ToLower() ==  title.ToLower() && t.UserId == userId);
+                .AnyAsync(t => t.Title.Equals(title, StringComparison.CurrentCultureIgnoreCase) && t.UserId == userId);
         }
     }
 }

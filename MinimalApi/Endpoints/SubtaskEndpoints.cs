@@ -109,6 +109,9 @@ namespace MinimalApi.Endpoints
                 // get user from context
                 var userId = context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
+                if (userId == null) 
+                    return Results.Unauthorized();
+
                 // Check if the subtask exists
                 var existingSubtask = await subtaskService.GetSubtaskById(id,userId);
                 if (existingSubtask == null)

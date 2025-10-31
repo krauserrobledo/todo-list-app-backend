@@ -7,10 +7,10 @@ namespace Application.Services
     /// <summary>
     /// Service implementation for  subtask service interface
     /// </summary>
-    public class SubtaskService(ISubtaskRepository subtaskRepository) : ISubtaskService
+    public class SubtaskService(ISubtaskRepository subtaskRepository, ITaskRepository taskRepository) : ISubtaskService
     {
         private readonly ISubtaskRepository _subtaskRepository = subtaskRepository;
-        private readonly ITaskRepository? _taskRepository;
+        private readonly ITaskRepository _taskRepository = taskRepository;
 
         /// <summary>
         /// Creates a new Subtask
@@ -117,7 +117,7 @@ namespace Application.Services
             // Check if belongs to user
             var task = await _taskRepository.GetById(taskId);
             if (task == null || task.UserId != userId)
-                return new List<Subtask>();
+                return [];
 
             return await _subtaskRepository.GetAllByTask(taskId);
         }
