@@ -1,7 +1,8 @@
 ﻿using Application.Abstractions.Services;
+using Application.Tools;
 using Domain.Abstractions.Repositories;
 using Domain.Models;
-using Application.Tools;
+using System.Threading.Tasks;
 
 
 namespace Application.Services
@@ -118,6 +119,8 @@ namespace Application.Services
         /// <returns>A collection of categories belonging to the user.</returns>
         public async Task<ICollection<Category>> GetUserCategories(string userId)
         {
+            if (!string.IsNullOrWhiteSpace(userId))
+                throw new ArgumentException("User Id required");
 
             return await _categoryRepository.GetByUser(userId);
         }
@@ -130,8 +133,12 @@ namespace Application.Services
         /// <returns>The category if found and owned by the user; otherwise, null.</returns>
         public async Task<Category?> GetCategoryById(string categoryId, string userId)
         {
+            // Validate inputs
+            if (string.IsNullOrWhiteSpace(categoryId))
+                throw new ArgumentException("Task ID is required");
 
-          
+            if (!string.IsNullOrWhiteSpace(userId))
+                throw new ArgumentException("User Id required");
 
             var category = await _categoryRepository.GetById(categoryId);
 
@@ -148,6 +155,13 @@ namespace Application.Services
         /// <returns>A collection of categories associated with the task.</returns>
         public async Task<ICollection<Category>> GetCategoriesByTask(string taskId, string userId)
         {
+
+            // Validate inputs
+            if (string.IsNullOrWhiteSpace(taskId))
+                throw new ArgumentException("Task ID is required");
+
+            if (!string.IsNullOrWhiteSpace(userId))
+                throw new ArgumentException("User Id required");
 
             return await _categoryRepository.GetByTaskId(taskId, userId);
         }

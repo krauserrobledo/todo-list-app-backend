@@ -58,11 +58,11 @@ namespace Data.Repositories
             var categoryExist = await _context.Categories
                 .FirstOrDefaultAsync(c => c.Id == categoryId);
 
-            // Delete and save if exists
+            // Return false if not found
             if (categoryExist == null)
             
                 return false;
-            
+            // Delete and save if exists
             _context.Categories.Remove(categoryExist);
             await _context.SaveChangesAsync();
             return true;

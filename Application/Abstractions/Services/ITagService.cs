@@ -12,8 +12,7 @@ namespace Application.Abstractions.Services
         Task<Tag?> UpdateTag(string tagId, string userId, string? name);
         Task<bool> DeleteTag(string tagId, string userId);
         Task<ICollection<Tag>> GetUserTags(string userId);
-        Task<Tag?> GetTagsByUser(string tagId, string userId);
-        Task<bool> TagNameExists(string name, string userId);
-        Task<string> GetTagById(string id);
+        Task<Tag?> GetTagById(string id, string userId);
+        Task<ICollection<Tag>> GetTagsByTask(string id, string userId);
     }
 }

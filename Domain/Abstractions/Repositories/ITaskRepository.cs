@@ -9,34 +9,34 @@ namespace Domain.Abstractions.Repositories
     {
 
         // Get tasks
-        Task<ICollection<Tasks>> GetTasksByUser(string userId);
+        Task<ICollection<Tasks>> GetByUser(string userId);
 
-        Task<ICollection<Tasks>> GetTasksByUserWithDetails(string userId); // with categories and tags
+        Task<ICollection<Tasks>> GetByUserWithDetails(string userId); // with categories and tags
 
-        Task<Tasks?> GetTaskWithDetails(string taskId);
+        Task<Tasks?> GetWithDetails(string taskId);
 
 
         // Manage relationships
-        Task AddTagToTask(string taskId, string tagId);
+        Task AddTag(string taskId, string tagId);
 
-        Task RemoveTagFromTask(string taskId, string tagId);
+        Task RemoveTag(string taskId, string tagId);
 
-        Task AddCategoryToTask(string taskId, string categoryId);
+        Task AddCategory(string taskId, string categoryId);
 
-        Task RemoveCategoryFromTask(string taskId, string categoryId);
+        Task RemoveCategory(string taskId, string categoryId);
 
 
         // CRUD operations
-        Task<Tasks?> GetTaskById(string taskId);
+        Task<Tasks?> GetById(string taskId);
 
-        Task<Tasks> CreateTask(Tasks task);
+        Task<Tasks> Create(Tasks task);
 
-        Task<Tasks?> UpdateTask(Tasks task);
+        Task<Tasks?> Update(Tasks task);
 
-        Task<bool> DeleteTask(string taskId);
+        Task<bool> Delete(string taskId);
 
 
         //check if task title exists for a user
-        Task<bool> TaskTitleExists(string title, string userId);
+        Task<bool> TitleExists(string title, string userId);
     }
 }

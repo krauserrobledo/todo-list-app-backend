@@ -24,28 +24,9 @@ namespace Data.Repositories
         /// <param name="task"> Task model</param>
         /// <returns>Task</returns>
         /// <exception cref="InvalidOperationException">Thrown when a task with the same title already exists for the user.</exception>
-        public async Task<Tasks> CreateTask(Tasks task)
+        public async Task<Tasks> Create(Tasks task)
         {
-            // Validate input and check if exists using LINQ
-
-
-            var existingTitle = await TaskTitleExists(task.Title, task.UserId);
-
-            if (existingTitle)
-
-                throw new InvalidOperationException("A task with the same title already exists for this user.");
-
-            // Status validtion
-            if (!Domain.Constants.TaskStatus.IsValid(task.Status))
-            
-                task.Status = Domain.Constants.TaskStatus.NonStarted;
-
-            // Generate a new GUID for the ID if not provided
-            if (string.IsNullOrEmpty(task.Id) || string.IsNullOrWhiteSpace(task.Id))
-
-                task.Id = Guid.NewGuid().ToString();
-
-            // Add to DbContext and save changes
+            // No business logic validation for duplicate titles here 
             await _context.Tasks.AddAsync(task);
             await _context.SaveChangesAsync();
             return task;
@@ -57,53 +38,38 @@ namespace Data.Repositories
         /// <remarks> Validates before updating a Task</remarks>
         /// <param name="task"> Task entity</param>
         /// <returns> Existing Task</returns>
-        public async Task<Tasks?> UpdateTask(Tasks task)
+        public async Task<Tasks?> Update(Tasks task)
         {
 
             // Check if task exists using LINQ
             var existingTask = await _context.Tasks
                 .FirstOrDefaultAsync(t => t.Id == task.Id); 
 
-            if (existingTask == null)
-                return null;
-
-            // Update properties
-            existingTask.Title = task.Title?? existingTask.Title;
-            existingTask.Description = task.Description?? existingTask.Description;
-            existingTask.DueDate = task.DueDate ?? existingTask.DueDate;
-
-            // Status validation
-            if (!Domain.Constants.TaskStatus.IsValid(task.Status))
-                existingTask.Status = Domain.Constants.TaskStatus.NonStarted;
-
-            else
-                existingTask.Status = task.Status ?? existingTask.Status;
-
             // Save changes
             await _context.SaveChangesAsync();
-            return existingTask;
+            return task;
         }
+
         /// <summary>
         /// Deletes a task by its ID.
         /// </summary>
         /// <remarks> Validates before deleting a Task</remarks>
         /// <param name="taskId">Id for a task</param>
         /// <returns>Boolean value </returns>
-        public async Task<bool> DeleteTask(string taskId)
+        public async Task<bool> Delete(string taskId)
         {
             // Get task using LINQ
             var task = await _context.Tasks
                 .FirstOrDefaultAsync(t => t.Id == taskId);
 
             // If not found, return false
-            if (task == null) return false;
+            if (task == null)
+                return false;
 
             // Remove and save
-            if (task != null)
-            
-                _context.Tasks.Remove(task);
-                await _context.SaveChangesAsync();
-                return true;
+            _context.Tasks.Remove(task);
+            await _context.SaveChangesAsync();
+            return true;
         }
 
         /// <summary>
@@ -112,7 +78,7 @@ namespace Data.Repositories
         /// <remarks> Retrieves a Task by ID</remarks>
         /// <param name="taskId">Id for a task</param>
         /// <returns> Existing Task</returns>
-        public async Task<Tasks?> GetTaskById(string taskId)
+        public async Task<Tasks?> GetById(string taskId)
         {
 
             // Get task using LINQ
@@ -125,7 +91,7 @@ namespace Data.Repositories
         /// </summary>
         /// <param name="userId"> User Identification</param>
         /// <returns>List of Tasks</returns>
-        public async Task<ICollection<Tasks>> GetTasksByUser(string userId)
+        public async Task<ICollection<Tasks>> GetByUser(string userId)
         {
 
             // Get tasks using LINQ
@@ -140,7 +106,7 @@ namespace Data.Repositories
         /// <remarks> Retrieves tasks along with their related entities for a specific user</remarks>
         /// <param name="userId"> User identification</param>
         /// <returns> Task list by user id</returns>
-        public async Task<ICollection<Tasks>> GetTasksByUserWithDetails(string userId)
+        public async Task<ICollection<Tasks>> GetByUserWithDetails(string userId)
         {
 
             // get tasks with related entities using LINQ
@@ -162,12 +128,8 @@ namespace Data.Repositories
         /// <param name="taskId">Id for a task</param>
         /// <returns>Task with related details</returns>
         /// <exception cref="ArgumentException">Thrown when taskId is null or empty</exception>
-        public async Task<Tasks?> GetTaskWithDetails(string taskId)
+        public async Task<Tasks?> GetWithDetails(string taskId)
         {
-
-            // Validate Task by Id
-            if (string.IsNullOrWhiteSpace(taskId))
-                throw new ArgumentException("Task ID cannot be whitespace.", nameof(taskId));
 
             // Retrieve task with related entities
             var task = await _context.Tasks
@@ -189,7 +151,7 @@ namespace Data.Repositories
         /// <param name="categoryId">Id for a category</param>
         /// <returns>Task with related details</returns>
         /// <exception cref="InvalidOperationException">Thrown when the category is not associated with the task.</exception>
-        public async Task RemoveCategoryFromTask(string taskId, string categoryId)
+        public async Task RemoveCategory(string taskId, string categoryId)
         {
 
             // Validate input AND association using LINQ
@@ -210,13 +172,12 @@ namespace Data.Repositories
         /// <param name="tagId">Id for a tag</param>
         /// <returns>Task with related details</returns>
         /// <exception cref="InvalidOperationException">Thrown when the tag is not associated with the task.</exception>
-        public async Task RemoveTagFromTask(string taskId, string tagId)
+        public async Task RemoveTag(string taskId, string tagId)
         {
 
             // Validate association using LINQ
             var taskTag = await _context.TaskTags
-                .FirstOrDefaultAsync(tt => tt.TaskId == taskId && tt.TagId == tagId)
-                ?? throw new InvalidOperationException("The tag is not associated with the task.");
+                .FirstOrDefaultAsync(tt => tt.TaskId == taskId && tt.TagId == tagId);
 
             // Remove and save
             _context.TaskTags.Remove(taskTag);
@@ -231,16 +192,9 @@ namespace Data.Repositories
         /// <param name="categoryId">Id for a category</param>
         /// <returns>Task with related details</returns>
         /// <exception cref="InvalidOperationException">Thrown when the category is not associated with the task.</exception>
-        public async Task AddCategoryToTask(string taskId, string categoryId)
+        public async Task AddCategory(string taskId, string categoryId)
         {
-
-            // Validate association using LINQ
-            var existingAssociation = await _context.TaskCategories
-                .AnyAsync(tc => tc.TaskId == taskId && tc.CategoryId == categoryId);
-
-            if (existingAssociation)
-                throw new InvalidOperationException("The category is already associated with the task.");
-
+            
             // Create new association
             var taskCategory = new TaskCategory()
             {
@@ -261,22 +215,14 @@ namespace Data.Repositories
         /// <param name="tagId">Id for a tag</param>
         /// <returns>Task with related details</returns>
         /// <exception cref="InvalidOperationException">Thrown when the tag is not associated with the task.</exception>
-        public async Task AddTagToTask(string taskId, string tagId)
+        public async Task AddTag(string taskId, string tagId)
         {
 
             // Validate Task by Id
-            var task = await _context.Tasks.FindAsync(taskId)
-                ?? throw new InvalidOperationException("Task not found.");
+            var task = await _context.Tasks.FindAsync(taskId);
 
             // Validate Tag by Id
-            var tag = await _context.Tags.FindAsync(tagId)
-                ?? throw new InvalidOperationException("Tag not found.");
-
-            // Validate input and association using LINQ
-            var existingAssociation = await _context.TaskTags
-                .AnyAsync(tt => tt.TaskId == taskId && tt.TagId == tagId);
-            if (existingAssociation)
-                throw new InvalidOperationException("The tag is already associated with the task.");
+            var tag = await _context.Tags.FindAsync(tagId);
 
             // Create new association
             var taskTag = new TaskTag()
@@ -298,12 +244,11 @@ namespace Data.Repositories
         /// <param name="title">The title of the task.</param>
         /// <param name="userId">Id for user</param>
         /// <returns>Boolean value</returns>
-        public async Task<bool> TaskTitleExists(string title, string userId)
+        public async Task<bool> TitleExists(string title, string userId)
         {
-            var lowTitle = title.ToLower();
 
             return await _context.Tasks
-                .AnyAsync(t => t.Title.ToLower() ==  lowTitle && t.UserId == userId);
+                .AnyAsync(t => t.Title.ToLower() ==  title.ToLower() && t.UserId == userId);
         }
     }
 }
