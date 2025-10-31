@@ -1,3 +1,4 @@
+﻿
 namespace Domain.Models;
 
 /// <summary>
@@ -13,4 +14,5 @@ public class Tag
     public required string UserId { get; set; }
 
     public virtual ICollection<TaskTag> TaskTags { get; set; } = new List<TaskTag>();
+
 }

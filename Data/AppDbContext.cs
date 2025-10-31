@@ -1,4 +1,4 @@
-using Domain.Models;
+﻿using Domain.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,12 +26,6 @@ namespace Data
 
         // DbSet for TaskTags (many-to-many relationship)
         public DbSet<TaskTag> TaskTags { get; set; } = null!;
-
-        // DbSet for TaskCategories (many-to-many relationship)
-        public DbSet<TaskCategory> TaskCategories { get; set; } = null!;
-        // Apply all configurations from the current assembly
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
 
         // DbSet for TaskCategories (many-to-many relationship)
         public DbSet<TaskCategory> TaskCategories { get; set; } = null!;

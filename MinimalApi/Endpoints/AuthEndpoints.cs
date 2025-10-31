@@ -1,8 +1,8 @@
+using Application.DTOs.AuthDTOs;
 using Data.Abstractions;
 using Data.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using MinimalApi.DTOs.AuthDTOs;
 
 namespace MinimalApi.Endpoints
 {

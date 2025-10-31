@@ -17,15 +17,10 @@ namespace Data.Configurations
         {
             // Table name
             builder.ToTable("TaskTags");
-<<<<<<< HEAD
-            // PK 
-            builder.HasKey(tt => new { tt.TaskId, tt.TagId });
-=======
 
             // PK 
             builder.HasKey(tt => new { tt.TaskId, tt.TagId });
 
->>>>>>> 3b811eb (refactor: improve code organization)
             // Configure properties
             builder.Property(tt => tt.TaskId)
                 .IsRequired()
@@ -34,10 +29,7 @@ namespace Data.Configurations
             builder.Property(tt => tt.TagId)
                 .IsRequired()
                 .HasMaxLength(450);
-<<<<<<< HEAD
-=======
 
->>>>>>> 3b811eb (refactor: improve code organization)
             // Relationships
             builder.HasOne(tt => tt.Task)
                 .WithMany(t => t.TaskTags)

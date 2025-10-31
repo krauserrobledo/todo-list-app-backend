@@ -1,15 +1,16 @@
-﻿using Domain.Abstractions;
-using Domain.Models;
+﻿using Application.Abstractions.Services;
+using Application.DTOs.SubtaskDTOs;
 using Microsoft.AspNetCore.Mvc;
-using MinimalApi.DTOs.SubtaskDTOs;
 
 namespace MinimalApi.Endpoints
 {
+
     /// <summary>
     /// Configures the API endpoints for subtask-related operations.
     /// </summary>
     public static class SubtaskEndpoints
     {
+
         /// <summary>
         /// Configures the API endpoints for subtask-related operations.
         /// </summary>
@@ -35,6 +36,7 @@ namespace MinimalApi.Endpoints
                 .WithSummary("Get a subtask by ID")
                 .RequireAuthorization();   
         }
+
         /// <summary>
         /// Creates a new subtask.
         /// </summary>
@@ -45,9 +47,9 @@ namespace MinimalApi.Endpoints
         /// <param name="context">The HTTP context.</param>
         /// <returns>Returns the created subtask.</returns>
         private static async Task<IResult> CreateSubtask(
-            [FromBody] SubtaskCreateDTO request,
-            ISubtaskRepository subtaskRepository,
-            ITaskRepository taskRepository,
+            [FromBody] SubtaskCreateRequest request,
+            ISubtaskService subtaskService,
+            ITaskService taskService,
             HttpContext context)
         {
             // Logic to create a subtask
@@ -63,25 +65,22 @@ namespace MinimalApi.Endpoints
                 if (string.IsNullOrWhiteSpace(request.TaskId))
                     return Results.BadRequest("TaskId is required.");
                 // Check if the associated task exists and belongs to the user
-                var task = await taskRepository.GetTaskById(request.TaskId);
+                var task = await taskService.GetTaskById(request.TaskId, userId);
+
                 if (task == null)
                     return Results.BadRequest("The specified TaskId does not exist.");
-                // Create new Subtask entity
-                var newSubtask = new Subtask
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    Title = request.Title,
-                    TaskId = request.TaskId
-                };
+
                 // Save to repository
-                var createdSubtask = await subtaskRepository.CreateSubtask(newSubtask);
+                var subtask = await subtaskService.CreateSubtask
+                    (userId,
+                    request.TaskId,
+                    request.Title
+                    );
+
+                var response = SubtaskResponse.FromDomain(subtask);
+
                 // Return success response
-                return Results.Created($"/api/subtasks/{createdSubtask.Id}", new
-                {
-                    id = createdSubtask.Id,
-                    title = createdSubtask.Title,
-                    taskId = createdSubtask.TaskId
-                });
+                return Results.Created($"/api/subtasks/{subtask.Id}", response);
             }
             catch (Exception ex)
             {
@@ -89,6 +88,7 @@ namespace MinimalApi.Endpoints
                 return Results.Problem("An error occurred while creating the subtask: " + ex.Message);
             }
         }
+
         /// <summary>
         /// Updates an existing subtask.
         /// </summary>
@@ -100,36 +100,42 @@ namespace MinimalApi.Endpoints
         /// <returns>Returns the updated subtask.</returns>
         private static async Task<IResult> UpdateSubtask(
            string id,
-           [FromBody] SubtaskUpdateDTO request,
-           ISubtaskRepository subtaskRepository,
+           [FromBody] SubtaskUpdateRequest request,
+           ISubtaskService subtaskService,
            HttpContext context)
         {
             try
             {
+                // get user from context
+                var userId = context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
                 // Check if the subtask exists
-                var existingSubtask = await subtaskRepository.GetSubtaskById(id);
+                var existingSubtask = await subtaskService.GetSubtaskById(id,userId);
                 if (existingSubtask == null)
                     return Results.NotFound($"Subtask with ID {id} not found");
                 // Update properties
                 if (!string.IsNullOrWhiteSpace(request.Title))
                     existingSubtask.Title = request.Title;
-                // Repository call
-                var updatedSubtask = await subtaskRepository.UpdateSubtask(existingSubtask);
+                // Service call
+                var updatedSubtask = await subtaskService.UpdateSubtask(
+                    id, request.Title, userId);
+
                 if (updatedSubtask == null)
                     return Results.NotFound($"Subtask with ID {id} not found");
-                // Return response
-                return Results.Ok(new
-                {
-                    id = updatedSubtask.Id,
-                    title = updatedSubtask.Title,
-                    taskId = updatedSubtask.TaskId
-                });
+                // Response
+                var response = SubtaskResponse.FromDomain(updatedSubtask);
+                return Results.Ok(response);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Results.Conflict(ex.Message);
             }
             catch (Exception ex)
             {
                 return Results.Problem($"Error updating subtask: {ex.Message}");
             }
         }
+
         /// <summary>
         /// Deletes a subtask by ID.
         /// </summary>
@@ -139,17 +145,21 @@ namespace MinimalApi.Endpoints
         /// <returns>Returns a result indicating the outcome of the delete operation.</returns>
         private static async Task<IResult> DeleteSubtask(
             string id,
-            ISubtaskRepository subtaskRepository,
+            ISubtaskService subtaskService,
             HttpContext context)
         {
             try
             {
+
+                //get user from context
+                var userId = context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
                 // Verify ID
-                var existingSubtask = await subtaskRepository.GetSubtaskById(id);
+                var existingSubtask = await subtaskService.GetSubtaskById(id, userId);
                 if (existingSubtask == null)
                     return Results.NotFound($"Subtask with ID {id} not found");
-                // Repository call
-                var deleted = await subtaskRepository.DeleteSubtask(id);
+                // Service call
+                var deleted = await subtaskService.DeleteSubtask(id, userId);
                 // Verify deletion
                 if (!deleted)
                     return Results.NotFound($"Subtask with ID {id} not found");
@@ -161,6 +171,7 @@ namespace MinimalApi.Endpoints
                 return Results.Problem($"Error deleting subtask: {ex.Message}");
             }
         }
+
         /// <summary>
         /// Gets all subtasks for a specific task.
         /// </summary>
@@ -171,13 +182,16 @@ namespace MinimalApi.Endpoints
         /// <returns></returns>
         private static async Task<IResult> GetAllSubtasksByTask(
             string taskId,
-            ISubtaskRepository subtaskRepository,
+            ISubtaskService subtaskService,
             HttpContext context)
         {
             try
             {
-                // Repository call
-                var subtasks = await subtaskRepository.GetAllSubtasksByTask(taskId);
+                //Get user from context
+                var userId = context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+                // Service call
+                var subtasks = await subtaskService.GetSubtasksByTask(taskId, userId);
                 // Return response
                 return Results.Ok(subtasks.Select(st => new
                 {
@@ -192,6 +206,7 @@ namespace MinimalApi.Endpoints
                 return Results.Problem($"Error retrieving subtasks: {ex.Message}");
             }
         }
+
         /// <summary>
         /// Gets a subtask by ID.
         /// </summary>
@@ -202,13 +217,16 @@ namespace MinimalApi.Endpoints
         /// <returns> Ok, Problem, Not Found</returns>
         private static async Task<IResult> GetSubtaskById(
             string id,
-            ISubtaskRepository subtaskRepository,
+            ISubtaskService subtaskService,
             HttpContext context)
         {
             try
             {
-                // Repository call
-                var subtask = await subtaskRepository.GetSubtaskById(id);
+                //Get user by context
+                var userId = context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+                // Service call
+                var subtask = await subtaskService.GetSubtaskById(id, userId);
                 // Conditional Return
                 if (subtask == null)
                     return Results.NotFound($"Subtask with ID {id} not found");

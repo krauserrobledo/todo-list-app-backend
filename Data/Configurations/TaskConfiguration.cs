@@ -1,4 +1,4 @@
-using Data.Identity;
+﻿using Data.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tasks = Domain.Models.Task;
