@@ -1,4 +1,5 @@
-﻿namespace Domain.Models;
+﻿
+namespace Domain.Models;
 /// <summary>
 /// Category entity representing a task category
 /// </summary>

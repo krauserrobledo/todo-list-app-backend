@@ -1,17 +1,8 @@
-using Domain.Abstractions.Repositories;
-using Data;
-using Data.Abstractions;
-using Data.Identity;
-using Data.Repositories;
-using Data.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
+using Application;
+using Infraestructure;
 using Microsoft.OpenApi.Models;
 using MinimalApi.Endpoints;
 using MinimalApi.Middleware;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -57,62 +48,16 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-// Add DbContext with SQL Server provider
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+// ✅ CLEAN ARCHITECTURE DEPENDENCY INJECTION
+// All infrastructure services (DbContext, Identity, Authentication, Repositories) are registered here
+builder.Services.AddInfraestructure(builder.Configuration);
 
-// Identity DI
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-{
-    options.Password.RequireDigit = true;
-    options.Password.RequireLowercase = true;
-    options.Password.RequiredLength = 6;
-    options.User.RequireUniqueEmail = true;
-})
+// All application services (Business logic services) are registered here  
+builder.Services.AddApplication();
 
-.AddEntityFrameworkStores<AppDbContext>()
-.AddDefaultTokenProviders();
-
-// Repositories DI
-builder.Services.AddScoped<ITaskRepository, TaskRepository>();
-builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-builder.Services.AddScoped<ITagRepository, TagRepository>();
-builder.Services.AddScoped<ISubtaskRepository, SubtaskRepository>();
-
-// Minimal API Services DI
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-// JWT configuration
-var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-var key = Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]);
-
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-
-.AddJwtBearer(options =>
-{
-
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(key),
-        ValidateIssuer = true,
-        ValidIssuer = jwtSettings["Issuer"],
-        ValidateAudience = true,
-        ValidAudience = jwtSettings["Audience"],
-        ValidateLifetime = true,
-        ClockSkew = TimeSpan.Zero
-    };
-});
-// Authorization DI
-builder.Services.AddAuthorization();
-
-// Token Service DI
-builder.Services.AddScoped<ITokenService, TokenService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -143,4 +88,5 @@ app.MapTaskEndpoints();
 app.MapTagEndpoints();
 app.MapCategoryEndpoints();
 app.MapSubtaskEndpoints();
+
 app.Run();

@@ -1,12 +1,12 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Data.Abstractions;
-using Data.Identity;
+using Infraestructure.Abstractions;
+using Infraestructure.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Data.Services
+namespace Infraestructure.Services
 {
 
     /// <summary>

@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
-using Data.Identity;
-namespace Data.Abstractions
+using Infraestructure.Identity;
+namespace Infraestructure.Abstractions
 {
     /// <summary>
     /// Defines methods for generating and validating authentication tokens.

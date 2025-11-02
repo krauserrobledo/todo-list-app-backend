@@ -1,6 +1,6 @@
 using Application.DTOs.AuthDTOs;
-using Data.Abstractions;
-using Data.Identity;
+using Infraestructure.Abstractions;
+using Infraestructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 

@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Task = Domain.Models.Task;
 
-namespace Data.Identity
+namespace Infraestructure.Identity
 {
     /// <summary>
     /// Represents an application user with additional profile information and navigation properties.

@@ -1,6 +1,6 @@
 ﻿using Domain.Models;
 
-namespace Domain.Abstractions.Repositories
+namespace Application.Abstractions.Repositories
 {
     /// <summary>
     /// Interface for Category repository

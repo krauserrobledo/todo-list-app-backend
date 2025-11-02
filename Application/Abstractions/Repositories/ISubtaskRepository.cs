@@ -1,6 +1,6 @@
 ﻿using Domain.Models;
 
-namespace Domain.Abstractions.Repositories
+namespace Application.Abstractions.Repositories
 {
     public interface ISubtaskRepository
     {

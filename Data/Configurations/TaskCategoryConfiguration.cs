@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Data.Configurations
+namespace Infraestructure.Configurations
 {
     /// <summary>
     /// Configures the entity type <see cref="TaskCategory"/> for the database context.

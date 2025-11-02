@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Data.Migrations
+namespace Infraestructure.Migrations
 {
     /// <inheritdoc />
     public partial class Databasewithidentity : Migration
@@ -333,7 +333,7 @@ namespace Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Categories_Name_UserId",
                 table: "Categories",
-                columns: new[] { "Name", "UserId" },
+                columns: ["Name", "UserId"],
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -350,7 +350,7 @@ namespace Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Tags_Name_UserId",
                 table: "Tags",
-                columns: new[] { "Name", "UserId" },
+                columns: ["Name", "UserId"],
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -361,13 +361,13 @@ namespace Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_TaskCategories_TaskId_CategoryId",
                 table: "TaskCategories",
-                columns: new[] { "TaskId", "CategoryId" },
+                columns: ["TaskId", "CategoryId"],
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tasks_Title_UserId",
                 table: "Tasks",
-                columns: new[] { "Title", "UserId" },
+                columns: ["Title", "UserId"],
                 unique: true,
                 filter: "[UserId] IS NOT NULL");
 
@@ -384,7 +384,7 @@ namespace Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_TaskTags_TaskId_TagId",
                 table: "TaskTags",
-                columns: new[] { "TaskId", "TagId" },
+                columns: ["TaskId", "TagId"],
                 unique: true);
         }
 

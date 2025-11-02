@@ -1,5 +1,6 @@
 ﻿using Application.Abstractions.Services;
-using Domain.Abstractions.Repositories;
+using Application.Abstractions.Repositories;
+
 using Domain.Models;
 
 namespace Application.Services

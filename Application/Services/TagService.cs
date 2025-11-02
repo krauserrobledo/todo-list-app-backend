@@ -1,6 +1,6 @@
 ﻿using Application.Abstractions.Services;
 using Application.Tools;
-using Domain.Abstractions.Repositories;
+using Application.Abstractions.Repositories;
 using Domain.Models;
 using System.Threading.Tasks;
 
@@ -30,7 +30,7 @@ namespace Application.Services
 
             // Bussinnes logic
             if (string.IsNullOrEmpty(name)) 
-                throw new ArgumentNullException("Tag name is required");
+                throw new ArgumentException("Tag name is required");
 
             if (string.IsNullOrWhiteSpace(userId))
                 throw new ArgumentException("User ID is required");
@@ -139,7 +139,7 @@ namespace Application.Services
             // Check if belongs to user
             var task = await _taskRepository.GetById(id);
             if (task == null || task.UserId != userId)
-                return new List<Tag>();
+                return [];
 
             return await _tagRepository.GetByTask(id, userId);
         }

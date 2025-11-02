@@ -1,8 +1,8 @@
-﻿using Domain.Abstractions.Repositories;
+﻿using Application.Abstractions.Repositories;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Data.Repositories
+namespace Infraestructure.Repositories
 {
 
     /// <summary>

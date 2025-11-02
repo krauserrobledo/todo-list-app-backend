@@ -1,8 +1,7 @@
 ﻿using Application.Abstractions.Services;
 using Application.Tools;
-using Domain.Abstractions.Repositories;
+using Application.Abstractions.Repositories;
 using Domain.Models;
-using System.Threading.Tasks;
 
 
 namespace Application.Services

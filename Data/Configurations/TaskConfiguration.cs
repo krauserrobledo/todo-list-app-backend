@@ -1,9 +1,9 @@
-﻿using Data.Identity;
+﻿using Infraestructure.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tasks = Domain.Models.Task;
 
-namespace Data.Configurations
+namespace Infraestructure.Configurations
 {
     /// <summary>
     /// Configures the entity type <see cref="Tasks"/> for the database context.

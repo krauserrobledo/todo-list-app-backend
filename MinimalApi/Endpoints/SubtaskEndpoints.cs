@@ -108,6 +108,8 @@ namespace MinimalApi.Endpoints
             {
                 // get user from context
                 var userId = context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userId))
+                    return Results.Unauthorized();
 
                 if (userId == null) 
                     return Results.Unauthorized();
@@ -157,6 +159,8 @@ namespace MinimalApi.Endpoints
                 //get user from context
                 var userId = context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
+                if (userId == null) return Results.Unauthorized();
+
                 // Verify ID
                 var existingSubtask = await subtaskService.GetSubtaskById(id, userId);
                 if (existingSubtask == null)
@@ -193,6 +197,8 @@ namespace MinimalApi.Endpoints
                 //Get user from context
                 var userId = context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
+                if(userId == null) return Results.Unauthorized();
+
                 // Service call
                 var subtasks = await subtaskService.GetSubtasksByTask(taskId, userId);
                 // Return response
@@ -227,6 +233,8 @@ namespace MinimalApi.Endpoints
             {
                 //Get user by context
                 var userId = context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+                if (userId == null) return Results.Unauthorized(); 
 
                 // Service call
                 var subtask = await subtaskService.GetSubtaskById(id, userId);
