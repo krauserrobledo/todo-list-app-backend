@@ -38,7 +38,7 @@
 	*Modified Models for Identity implementation.
 
 
-## ***5. Data Layer.***
+## ***Data Layer.***
 
 	- AppDbContext file created inside Data layer.
 	- Configurations added :
@@ -89,18 +89,13 @@
 	- Services/TokenService.cs moved from Application Layer to solve dependency Cycle.
 
 
-# ***6. Application Layer.***
+# ***Application Layer.***
 	
-	- Abstractions Folder on Application Project Containning Repository Interfaces for Repository Pattern. (Moved To Domain Project to solve dependency Cycle)
+	- Abstractions Folder on Application Project Containning Repository Interfaces for Repository Pattern. 
 	
 	- Identity Folder added to contain Application user model
 	
-	- Migrations folder generated in this Layer for Data Base Migration.
-  
-
-## ***Application Layer.***
-	
-	- Abstractions Folder on Application Project Containning Repository Interfaces for Repository Pattern.
+	- Migrations folder generated in this Layer for Data Base Migrations.
 	
 		- ICategoryRepository
 	  	- ISubTaskRepository
@@ -109,6 +104,7 @@
 	  	- IuserRepository (Deleted)
 	  	- ITokenService (Moved)
 	   	- Service/Token service implementation (Moved to Data Layer).
+		
 
 ## ***Minimal API.***
 
