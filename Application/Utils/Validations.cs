@@ -31,6 +31,7 @@
         /// <returns>white hex code if not valid color</returns>
         public static string ValidateAndFormatColor(string? color)
         {
+
             if (string.IsNullOrWhiteSpace(color))return "#FFFFFF";
 
             if (!IsValidHexColor(color)) return "#FFFFFF";

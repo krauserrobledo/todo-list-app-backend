@@ -54,8 +54,8 @@ namespace MinimalApi.Endpoints
             // Create user
             var user = new ApplicationUser
             {
-                UserName = request.Email,
-                Email = request.Email
+                Email = request.Email,
+                PasswordHash = request.Password
             };
 
             // Save user
