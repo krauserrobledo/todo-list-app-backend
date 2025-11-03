@@ -48,11 +48,11 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-// ✅ CLEAN ARCHITECTURE DEPENDENCY INJECTION
-// All infrastructure services (DbContext, Identity, Authentication, Repositories) are registered here
+// CLEAN ARCHITECTURE DEPENDENCY INJECTION CONTAINERS
+// FIRST All infrastructure services (DbContext, Identity, Authentication, Repositories) are registered here
 builder.Services.AddInfraestructure(builder.Configuration);
 
-// All application services (Business logic services) are registered here  
+// SECOND All application services (Business logic services) are registered here  
 builder.Services.AddApplication();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infraestructure.Configurations
 {
+
     /// <summary>
     /// Configures the entity type <see cref="TaskCategory"/> for the database context.
     /// </summary>
@@ -13,8 +14,10 @@ namespace Infraestructure.Configurations
     /// </remarks>
     public class TaskCategoryConfiguration : IEntityTypeConfiguration<TaskCategory>
     {
+
         public void Configure(EntityTypeBuilder<TaskCategory> builder)
         {
+
             // Table name
             builder.ToTable("TaskCategories");
 
@@ -25,6 +28,7 @@ namespace Infraestructure.Configurations
             builder.Property(tc => tc.TaskId)
                 .IsRequired()
                 .HasMaxLength(450);
+
             builder.Property(tc => tc.CategoryId)
                 .IsRequired()
                 .HasMaxLength(450);

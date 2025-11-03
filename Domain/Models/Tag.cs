@@ -1,5 +1,4 @@
-﻿
-namespace Domain.Models;
+﻿namespace Domain.Models;
 
 /// <summary>
 /// Class representing a Tag entity

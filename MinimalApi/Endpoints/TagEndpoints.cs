@@ -44,7 +44,7 @@ namespace MinimalApi.Endpoints
         /// </summary>
         /// <remarks> Validates if a tag with the same name exists for the user before creating a new one.</remarks>
         /// <param name="request">The tag creation request.</param>
-        /// <param name="tagRepository"> The tag Repository Interface Implementation</param>
+        /// <param name="tagService"> The tag Service Interface Implementation</param>
         /// <param name="context"></param>
         /// <returns>Returns the created Tag.</returns>
         private static async Task<IResult> CreateTag(
@@ -59,16 +59,12 @@ namespace MinimalApi.Endpoints
             {
 
                 // Validate request
-                if (string.IsNullOrWhiteSpace(request.Name))
-                    return Results.BadRequest("Tag name is required.");
+                if (string.IsNullOrWhiteSpace(request.Name)) return Results.BadRequest("Tag name is required.");
 
                 // Get user ID from context
                 var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                if (string.IsNullOrEmpty(userId))
-                    return Results.Unauthorized();
-
-                // Create new Tag entity' without using direct domain model
+                if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
 
                 // Save to repository
                 var createdTag = await tagService.CreateTag(request.Name, userId);
@@ -109,34 +105,25 @@ namespace MinimalApi.Endpoints
             {
                 // Get user ID from context
                 var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(userId))
-                    return Results.Unauthorized();
+                if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
 
                 if (userId == null) return Results.Unauthorized();
 
                 //Check if EXISTS
                 var existingTag = await tagService.GetTagById(id, userId);
 
-                if (existingTag == null)
-                {
-
-                    return Results.NotFound($"Tag with ID {id} not found.");
-                }
+                if (existingTag == null) return Results.NotFound($"Tag with ID {id} not found.");
 
                 // Check if Name exist or holding old name
                 if (!string.IsNullOrWhiteSpace(request.Name) && request.Name != existingTag.Name)
-                {
 
                     existingTag.Name = request.Name;
-                }
 
-                // Update in repository
+
+                // Update in service
                 var updatedTag = await tagService.UpdateTag(existingTag.Id, userId, request.Name);
 
-                if (updatedTag == null)
-                {
-                    return Results.Problem("Failed to update the tag.");
-                }
+                if (updatedTag == null) return Results.Problem("Failed to update the tag.");
 
                 // Return success response
                 return Results.Ok(new
@@ -189,11 +176,8 @@ namespace MinimalApi.Endpoints
                 // Service call
                 var deleted = await tagService.DeleteTag(id, userId);
 
-                if (!deleted)
-                {
+                if (!deleted) return Results.Problem("Failed to delete the tag.");
 
-                    return Results.Problem("Failed to delete the tag.");
-                }
 
                 // Return success response
                 return Results.NoContent();
@@ -225,15 +209,14 @@ namespace MinimalApi.Endpoints
 
                 // Get user ID from context
                 var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (userId == null)
-                    return Results.Unauthorized();
+
+                if (userId == null) return Results.Unauthorized();
 
 
                 // Id Validation
                 var tag = await tagService.GetTagById(id, userId);
 
-                if (tag == null)
-                    return Results.NotFound($"Tag not Found");
+                if (tag == null) return Results.NotFound($"Tag not Found");
 
                 // Return success response
                 return Results.Ok(new
@@ -271,12 +254,13 @@ namespace MinimalApi.Endpoints
                 // Check user / Get user fromcontext
                 var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
+                // User not found / unauthorized
                 if (string.IsNullOrEmpty(userId))
                     return Results.Unauthorized();
 
                 var tag = await tagService.GetUserTags( userId);
 
-
+                // return succesfull response
                 var response = tag.Select(TagResponse.FromDomain);
                 return Results.Ok(response);
             }

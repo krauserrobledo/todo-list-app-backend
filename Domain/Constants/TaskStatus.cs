@@ -1,5 +1,6 @@
 ﻿namespace Domain.Constants
 {
+
     /// <summary>
     /// Task Status constant
     /// </summary>
@@ -30,6 +31,7 @@
         // Validate if a status is valid
         public static bool IsValid(string status)
         {
+
             return All.Contains(status, StringComparer.OrdinalIgnoreCase);
         }
     }

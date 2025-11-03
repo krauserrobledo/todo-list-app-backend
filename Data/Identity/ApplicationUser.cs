@@ -4,6 +4,7 @@ using Task = Domain.Models.Task;
 
 namespace Infraestructure.Identity
 {
+
     /// <summary>
     /// Represents an application user with additional profile information and navigation properties.
     /// </summary>

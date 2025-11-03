@@ -15,6 +15,7 @@ namespace Infraestructure.Services
     /// <param name="configuration"></param>
     public class TokenService(IConfiguration configuration) : ITokenService
     {
+
         // inject configuration to access JWT settings
         private readonly IConfiguration _configuration = configuration;
 
@@ -71,7 +72,6 @@ namespace Infraestructure.Services
 
             try
             {
-
                 // Validate the token and retrieve claims
                 var principal = tokenHandler.ValidateToken(token, new TokenValidationParameters
                 {

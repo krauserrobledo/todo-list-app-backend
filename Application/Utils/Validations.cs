@@ -1,4 +1,4 @@
-﻿namespace Application.Tools
+﻿namespace Application.Utils
 {
 
     /// <summary>
@@ -24,14 +24,16 @@
             return System.Text.RegularExpressions.Regex.IsMatch(color, hexPattern);
         }
 
+        /// <summary>
+        /// Returns white as default if empty or not valid hex code
+        /// </summary>
+        /// <param name="color"> hex color code to validate</param>
+        /// <returns>white hex code if not valid color</returns>
         public static string ValidateAndFormatColor(string? color)
         {
-            if (string.IsNullOrWhiteSpace(color))
-                return "#FFFFFF";
+            if (string.IsNullOrWhiteSpace(color))return "#FFFFFF";
 
-            // Usar tu validación existente
-            if (!IsValidHexColor(color))
-                return "#FFFFFF";
+            if (!IsValidHexColor(color)) return "#FFFFFF";
 
             return color.ToUpper();
         }

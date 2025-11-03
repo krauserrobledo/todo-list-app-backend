@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infraestructure.Configurations
 {
+
     /// <summary>
     /// Configures the entity type for the <see cref="Subtask"/> class.
     /// </summary>
@@ -12,8 +13,10 @@ namespace Infraestructure.Configurations
     /// schema.</remarks>
     public class SubtaskConfiguration : IEntityTypeConfiguration<Subtask>
     {
+
         public void Configure(EntityTypeBuilder<Subtask> builder)
         {
+
             // Table name
             builder.ToTable("Subtasks");
 

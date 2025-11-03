@@ -5,6 +5,7 @@
 /// </summary>
 public class Task
 {
+
     public required string Id { get; set; }
 
     public required string UserId { get; set; }

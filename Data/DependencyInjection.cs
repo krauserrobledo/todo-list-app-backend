@@ -13,11 +13,13 @@ using Infraestructure.Abstractions;
 
 namespace Infraestructure
 {
+
     /// <summary>
     /// Dependency Injection configuration for Infrastructure layer
     /// </summary>
     public static class DependencyInjection
     {
+
         /// <summary>
         /// Registers all infrastructure services (Database, Identity, Authentication, Repositories)
         /// </summary>
@@ -28,11 +30,12 @@ namespace Infraestructure
             this IServiceCollection services,
             IConfiguration configuration)
         {
-            // ✅ DATABASE
+
+            // DATABASE
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
-            // ✅ IDENTITY
+            // IDENTITY
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
                 options.Password.RequireDigit = true;
@@ -43,7 +46,7 @@ namespace Infraestructure
             .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();
 
-            // ✅ JWT AUTHENTICATION
+            // JWT AUTHENTICATION
             var jwtSettings = configuration.GetSection("JwtSettings");
             var key = Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]!);
 
@@ -67,13 +70,13 @@ namespace Infraestructure
                 };
             });
 
-            // ✅ AUTHORIZATION
+            // AUTHORIZATION
             services.AddAuthorization();
 
-            // ✅ TOKEN SERVICE
+            // TOKEN SERVICE
             services.AddScoped<ITokenService, TokenService>();
 
-            // ✅ REPOSITORIES
+            // REPOSITORIES
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<ITaskRepository, TaskRepository>();
             services.AddScoped<ISubtaskRepository, SubtaskRepository>();
