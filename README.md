@@ -345,4 +345,29 @@
 ### ***Practice Angular Basics***
 
 	- Created login with API communication for my own APP
-	
+
+----
+
+# ***WEEKLY SPRINT 11/03***
+
+## ***Backend:***
+ 
+- Code fixes for Clean Arch. after implementing Services:
+
+  	- Move Repositories Interfaces to Application Layer.
+  	- Finish implementation for Using services in Endpoints.
+  	- Update Line Comments up to current changes.
+		
+- Dependency Injections:
+  
+	- Created containers for Extension Methods by Layer.
+ 	- Dependency Injection containers configuration in program.cs
+  	- Endpoint Checking using swagger.
+ 
+## ***Frontend:***
+ 
+- Initialize Angular project.
+  
+- Set project structure.
+  
+- Create Auth Module.
