@@ -1,16 +1,17 @@
 ﻿using Application.Abstractions.Services;
-using Application.Tools;
+using Application.Utils;
 using Application.Abstractions.Repositories;
 using Domain.Models;
 
-
 namespace Application.Services
 {
+
     /// <summary>
     /// Service implementation for Category service interface 
     /// </summary>
     public class CategoryService(ICategoryRepository categoryRepository) : ICategoryService
     {
+
         private readonly ICategoryRepository _categoryRepository = categoryRepository;
 
         /// <summary>
@@ -26,16 +27,14 @@ namespace Application.Services
         {
 
             // Bussiness logic validations
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Category name is required");
+            if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("Category name is required");
 
-            if (string.IsNullOrWhiteSpace(userId))
-                throw new ArgumentException("User ID is required");
+            if (string.IsNullOrWhiteSpace(userId)) throw new ArgumentException("User ID is required");
 
             // Check for duplicate names for the same user
             var nameExists = await _categoryRepository.NameExists(name.Trim(), userId);
-            if (nameExists)
-                throw new InvalidOperationException("A category with the same name already exists for this user");
+
+            if (nameExists) throw new InvalidOperationException("A category with the same name already exists for this user");
 
             // Validate and format color
             var validatedColor = Validations.ValidateAndFormatColor(color);
@@ -66,8 +65,8 @@ namespace Application.Services
 
             // Check ownership of category 
             var existingCategory = await _categoryRepository.GetById(categoryId);
-            if (existingCategory == null || existingCategory.UserId != userId)
-                return null;
+           
+            if (existingCategory == null || existingCategory.UserId != userId) return null;
 
             // Validate and update name if provided
             if (!string.IsNullOrWhiteSpace(name))
@@ -78,19 +77,15 @@ namespace Application.Services
 
                     var nameExists = await _categoryRepository.NameExists(name.Trim(), userId);
 
-                    if (nameExists)
-                        throw new InvalidOperationException("A category with the same name already exists for this user");
+                    if (nameExists) throw new InvalidOperationException("A category with the same name already exists for this user");
 
                     existingCategory.Name = name.Trim();
                 }
             }
 
             // Validate and update color if provided
-            if (!string.IsNullOrWhiteSpace(color))
-            {
-                existingCategory.Color = Validations.ValidateAndFormatColor(color);
-            }
-
+            if (!string.IsNullOrWhiteSpace(color)) existingCategory.Color = Validations.ValidateAndFormatColor(color);
+            
             return await _categoryRepository.Update(existingCategory);
         }
 
@@ -102,11 +97,11 @@ namespace Application.Services
         /// <returns>True if the category was deleted; otherwise, false.</returns>
         public async Task<bool> DeleteCategory(string categoryId, string userId)
         {
+
             // Verify ownership before deletion
             var category = await _categoryRepository.GetById(categoryId);
 
-            if (category == null || category.UserId != userId)
-                return false;
+            if (category == null || category.UserId != userId) return false;
 
             return await _categoryRepository.Delete(categoryId);
         }
@@ -118,8 +113,8 @@ namespace Application.Services
         /// <returns>A collection of categories belonging to the user.</returns>
         public async Task<ICollection<Category>> GetUserCategories(string userId)
         {
-            if (!string.IsNullOrWhiteSpace(userId))
-                throw new ArgumentException("User Id required");
+
+            if (!string.IsNullOrWhiteSpace(userId)) throw new ArgumentException("User Id required");
 
             return await _categoryRepository.GetByUser(userId);
         }
@@ -133,11 +128,9 @@ namespace Application.Services
         public async Task<Category?> GetCategoryById(string categoryId, string userId)
         {
             // Validate inputs
-            if (string.IsNullOrWhiteSpace(categoryId))
-                throw new ArgumentException("Task ID is required");
+            if (string.IsNullOrWhiteSpace(categoryId)) throw new ArgumentException("Task ID is required");
 
-            if (!string.IsNullOrWhiteSpace(userId))
-                throw new ArgumentException("User Id required");
+            if (!string.IsNullOrWhiteSpace(userId)) throw new ArgumentException("User Id required");
 
             var category = await _categoryRepository.GetById(categoryId);
 
@@ -156,11 +149,9 @@ namespace Application.Services
         {
 
             // Validate inputs
-            if (string.IsNullOrWhiteSpace(taskId))
-                throw new ArgumentException("Task ID is required");
+            if (string.IsNullOrWhiteSpace(taskId)) throw new ArgumentException("Task ID is required");
 
-            if (!string.IsNullOrWhiteSpace(userId))
-                throw new ArgumentException("User Id required");
+            if (!string.IsNullOrWhiteSpace(userId)) throw new ArgumentException("User Id required");
 
             return await _categoryRepository.GetByTaskId(taskId, userId);
         }

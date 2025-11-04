@@ -2,6 +2,7 @@
 
 namespace Application.Abstractions.Repositories
 {
+
     public interface ISubtaskRepository
     {
 

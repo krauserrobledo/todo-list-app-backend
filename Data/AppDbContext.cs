@@ -30,6 +30,7 @@ namespace Infraestructure
         // DbSet for TaskCategories (many-to-many relationship)
         public DbSet<TaskCategory> TaskCategories { get; set; } = null!;
 
+
         // Apply all configurations from the current assembly
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

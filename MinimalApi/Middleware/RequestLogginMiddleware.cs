@@ -25,10 +25,14 @@
         public async Task InvokeAsync(HttpContext context)
         {
             var startTime = DateTime.UtcNow;
+
             _logger.LogInformation("Starting request: {Method} {Path}",
                 context.Request.Method, context.Request.Path);
+
             await _next(context);
+
             var duration = DateTime.UtcNow - startTime;
+
             _logger.LogInformation("Completed request: {Method} {Path} - {StatusCode} in {Duration}ms",
                 context.Request.Method, context.Request.Path,
                 context.Response.StatusCode, duration.TotalMilliseconds);

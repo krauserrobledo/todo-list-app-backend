@@ -5,6 +5,7 @@
 /// </summary>
 public class TaskTag
 {
+
     public required string TaskId { get; set; }
 
     public required string TagId { get; set; }

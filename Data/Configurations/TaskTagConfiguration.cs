@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infraestructure.Configurations
 {
+
     /// <summary>
     /// Configures the entity type <see cref="TaskTag"/> for the database context.
     /// </summary>
@@ -40,6 +41,7 @@ namespace Infraestructure.Configurations
                 .WithMany(t => t.TaskTags)
                 .HasForeignKey(tt => tt.TagId)
                 .OnDelete(DeleteBehavior.Cascade);
+
             // Indexes
             builder.HasIndex(tt => new { tt.TaskId, tt.TagId })
             .IsUnique();

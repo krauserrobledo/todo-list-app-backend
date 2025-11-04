@@ -58,13 +58,13 @@ namespace Infraestructure.Repositories
         /// <returns>Boolean value </returns>
         public async Task<bool> Delete(string taskId)
         {
+
             // Get task using LINQ
             var task = await _context.Tasks
                 .FirstOrDefaultAsync(t => t.Id == taskId);
 
             // If not found, return false
-            if (task == null)
-                return false;
+            if (task == null) return false;
 
             // Remove and save
             _context.Tasks.Remove(task);

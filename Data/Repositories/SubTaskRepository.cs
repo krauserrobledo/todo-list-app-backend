@@ -79,9 +79,7 @@ namespace Infraestructure.Repositories
                 .FirstOrDefaultAsync();
 
             // If exists delete and save changes
-            if (subtaskExist == null)
-            
-                return false;
+            if (subtaskExist == null) return false;
 
             _context.Subtasks.Remove(subtaskExist);
             await _context.SaveChangesAsync();

@@ -7,11 +7,13 @@ using System.Security.Claims;
 
 namespace MinimalApi.Endpoints
 {
+
     /// <summary>
     /// Contains task-related API endpoints
     /// </summary>
     public static class TaskEndpoints
     {
+
         /// <summary>
         /// Configures the API endpoints for task-related operations.
         /// </summary>
@@ -22,26 +24,36 @@ namespace MinimalApi.Endpoints
         /// <param name="app">The <see cref="IEndpointRouteBuilder"/> used to configure the endpoints.</param>
         public static void MapTaskEndpoints(this IEndpointRouteBuilder app)
         {
+
             var group = app.MapGroup("/api/tasks")
                 .WithTags("Tasks")
                 .RequireAuthorization();
+
             // Defined task-related endpoints
             group.MapPost("/", CreateTask)
                 .WithSummary("Create a Task");
+
             group.MapPut("/{id}", UpdateTask)
                 .WithSummary("Update a Task");
+
             group.MapDelete("/{id}", DeleteTask)
                 .WithSummary("Remove selected Task by Id");
+
             group.MapGet("/{id}", GetTaskById)
                 .WithSummary("Get Task by Id");
+
             group.MapGet("/user/", GetTasksByUser)
                 .WithSummary("Get Tasks by User Id with Details");
+
             group.MapPost("/{taskId}/categories/{categoryId}", AddCategoryToTask)
                 .WithSummary("Add Category to existing task");
+
             group.MapPost("/{taskId}/tags/{tagId}", AddTagToTask)
                 .WithSummary("Add Tag to existing Task");
+
             group.MapDelete("/{taskId}/categories/{categoryId}", RemoveCategoryFromTask)
                 .WithSummary("Remove selected category from Task by Id");
+
             group.MapDelete("/{taskId}/tags/{tagId}", RemoveTagFromTask)
                 .WithSummary("Remove selected Tag from Task by Id");            
         }
@@ -67,6 +79,7 @@ namespace MinimalApi.Endpoints
             ITaskService taskService,
             HttpContext context)
         {
+
             // Logic to create a task
             try
             {
@@ -83,6 +96,7 @@ namespace MinimalApi.Endpoints
 
                 // Check for duplicate task title for the same user
                 var titleExists = await taskService.TaskTitleExists(request.Title.Trim(), userId);
+
                 if (titleExists)
                 {
                     return Results.Conflict("A task with the same title already exists for this user.");
@@ -132,7 +146,6 @@ namespace MinimalApi.Endpoints
         /// if the task does not exist, <see cref="Results.Conflict"/> if a task with the same title already exists for
         /// the user, <see cref="Results.Problem"/> if an error occurs during the update, or <see cref="Results.Ok"/>
         /// with the updated task details on success.</returns>
-        /// 
         private static async Task<IResult> UpdateTask(
             string id,
             [FromBody] TaskUpdateRequest request,
@@ -185,7 +198,6 @@ namespace MinimalApi.Endpoints
             }
         }
 
-
         /// <summary>
         /// Deletes a task with the specified identifier if it exists and belongs to the authenticated user.
         /// </summary>
@@ -230,6 +242,7 @@ namespace MinimalApi.Endpoints
                 return Results.Problem($"Error deleting task: {ex.Message}");
             }
         }
+
         /// <summary>
         /// Retrieves a task by its unique identifier.
         /// </summary>
@@ -249,14 +262,13 @@ namespace MinimalApi.Endpoints
             {
                 // Get user from context
                 var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(userId))
-                    return Results.Unauthorized();
+
+                if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
 
                 var task = await taskService.GetTaskById(id, userId);
-                if (task == null)
-                {
-                    return Results.NotFound($"Task with ID {id} not found.");
-                }
+
+                if (task == null) return Results.NotFound($"Task with ID {id} not found.");
+                
                 return Results.Ok(new
                 {
                     id = task.Id,
@@ -266,11 +278,13 @@ namespace MinimalApi.Endpoints
                     status = task.Status
                 });
             }
+
             catch (Exception ex)
             {
                 return Results.Problem($"Error while retrieving Task: {ex.Message}");
             }
         }
+
         /// <summary>
         /// Retrieves a list of tasks associated with the authenticated user, including their categories and tags.
         /// </summary>
@@ -290,6 +304,7 @@ namespace MinimalApi.Endpoints
             ITagService tagService,
             HttpContext context)
         {
+
             // Logic to get tasks by user ID
             try
             {
@@ -342,7 +357,6 @@ namespace MinimalApi.Endpoints
         /// <param name="categoryService"> Category Service class</param>
         /// <param name="context">HTTP context</param>
         /// <returns>NotFound, Problem, Error</returns>
-
         private static async Task<IResult> RemoveCategoryFromTask(
             string taskId, 
             string categoryId,
@@ -360,19 +374,18 @@ namespace MinimalApi.Endpoints
 
                 // Check if task exists
                 var existingTask = await taskService.GetTaskById(taskId, userId);
-                if (existingTask == null)
-                {
-                    return Results.NotFound($"Task not found");
-                }
+
+                if (existingTask == null) return Results.NotFound($"Task not found");
+
 
                 // Check if category exists
                 var existingCategory = await categoryService.GetCategoryById(categoryId, userId);
-                if (existingCategory == null)
-                {
-                    return Results.NotFound($"Category not found");
-                }
+
+                if (existingCategory == null) return Results.NotFound($"Category not found");
+
                 // Remove category from task
                 await taskService.RemoveCategoryFromTask(taskId, categoryId);
+
                 return Results.Ok($"Category {categoryId} removed from Task {taskId} successfully");
             }
             catch (Exception ex)
@@ -380,6 +393,7 @@ namespace MinimalApi.Endpoints
                 return Results.Problem($"Error removing category from task: {ex.Message}");
             }
         }
+
         /// <summary>
         /// Removes Tag from a Task
         /// </summary>
@@ -402,21 +416,22 @@ namespace MinimalApi.Endpoints
             {
                 // Get User From context
                 var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(userId))
-                    return Results.Unauthorized();
+
+                if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
+
                 // Check if task exists
                 var existingTask = await taskService.GetTaskById(taskId, userId);
-                if (existingTask == null || existingTask.UserId != userId)
-                    return Results.NotFound($"Task not found");
+
+                if (existingTask == null || existingTask.UserId != userId) return Results.NotFound($"Task not found");
 
                 // Check if tag exists
                 var existingTag = await tagService.GetTagById(tagId, userId);
 
-                if (existingTag == null)
-                    return Results.NotFound($"Tag not found");
+                if (existingTag == null) return Results.NotFound($"Tag not found");
 
                 // Remove tag from task
                 await taskService.RemoveTagFromTask(taskId, tagId);
+                
                 return Results.Ok($"Tag {tagId} removed from Task {taskId} successfully");
             }
             catch (Exception ex)
@@ -424,6 +439,7 @@ namespace MinimalApi.Endpoints
                 return Results.Problem($"Error removing tag from task: {ex.Message}");
             }
         }
+
         /// <summary>
         /// Adds a category to a specified task.
         /// </summary>
@@ -434,7 +450,6 @@ namespace MinimalApi.Endpoints
         /// <param name="categoryService">Service class for Category</param>
         /// <param name="context">HTTP context</param>
         /// <returns> Unauthorized, NotFound, Problem, Ok</returns>
-
         private static async Task<IResult> AddCategoryToTask(
             string taskId, 
             string categoryId,
@@ -442,43 +457,48 @@ namespace MinimalApi.Endpoints
             ICategoryService categoryService,
             HttpContext context)
         {
+
             // Logic to add a category to a task
             try
             {
+
                 // Get User From context
                 var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(userId))
-                    return Results.Unauthorized();
+
+                if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
+
                 // Check if task exists
                 var existingTask = await taskService.GetTaskById(taskId, userId);
-                if (existingTask == null || existingTask.UserId != userId)
-                    return Results.NotFound($"Task not found");
+
+                if (existingTask == null || existingTask.UserId != userId) return Results.NotFound($"Task not found");
+
                 // Check if category exists
                 var existingCategory = await categoryService.GetCategoryById(categoryId, userId);
-                if (existingCategory == null || existingTask.UserId !=userId)
-                {
-                    return Results.NotFound($"Category not found");
-                }
+
+                if (existingCategory == null || existingTask.UserId !=userId) return Results.NotFound($"Category not found");
+
                 // Add category to task
                 await taskService.AddCategoryToTask(taskId, categoryId);
+
                 return Results.Ok($"Category {categoryId} added to Task {taskId} successfully");
             }
+
             catch (Exception ex)
             {
                 return Results.Problem($"Error adding category to task: {ex.Message}");
             }
         }
+
         /// <summary>
         /// Adds a tag to a specified task.
         /// </summary>
         /// <remarks>This method checks for the existence of both the task and tag before adding the tag to the task.</remarks>
         /// <param name="taskId">Id references Task</param>
         /// <param name="tagId">Id references Tag</param>
-        /// <param name="tagRepository">Repository class for Tags</param>
-        /// <param name="taskRepository">Repository class for Task</param>
+        /// <param name="tagService">Service class for Tags</param>
+        /// <param name="taskService">Service class for Task</param>
         /// <param name="context">HTTP context</param>
         /// <returns> NotFound, Ok, Unauthorized, Problem</returns>
-
         private static async Task<IResult> AddTagToTask(
             string taskId,
             string tagId,
@@ -486,29 +506,32 @@ namespace MinimalApi.Endpoints
             ITaskService taskService,
             HttpContext context)
         {
+
             // Logic to add a tag to a task
             try
             {
+
                 // Get User From context
                 var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(userId))
-                    return Results.Unauthorized();
+
+                if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
+
                 // Check if task exists
                 var existingTask = await taskService.GetTaskById(taskId, userId);
-                if (existingTask == null || existingTask.UserId != userId)
-                {
-                    return Results.NotFound($"Task not found");
-                }
+
+                if (existingTask == null || existingTask.UserId != userId) return Results.NotFound($"Task not found");
+
                 // Check if tag exists
                 var existingTag = await tagService.GetTagById(tagId, userId);
-                if (existingTag == null || existingTask.UserId != userId)
-                {
-                    return Results.NotFound($"Tag not found");
-                }
+
+                if (existingTag == null || existingTask.UserId != userId) return Results.NotFound($"Tag not found");
+
                 // Add tag to task
                 await taskService.AddTagToTask(taskId, tagId);
+
                 return Results.Ok($"Tag {tagId} added to Task {taskId} successfully");
             }
+
             catch (Exception ex)
             {
                 return Results.Problem($"Error adding tag to task: {ex.Message}");

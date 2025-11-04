@@ -2,6 +2,7 @@
 
 namespace Application.Abstractions.Repositories
 {
+
     /// <summary>
     /// Interface for Task repository
     /// </summary>

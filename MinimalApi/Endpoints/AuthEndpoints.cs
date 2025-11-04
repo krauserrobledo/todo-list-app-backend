@@ -6,11 +6,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MinimalApi.Endpoints
 {
+
     /// <summary>
     /// Configures the API endpoints for authentication-related operations.
     /// </summary>
     public static class AuthEndpoints
     {
+
         /// <summary>
         /// Configures the API endpoints for authentication-related operations.
         /// </summary>
@@ -19,14 +21,18 @@ namespace MinimalApi.Endpoints
         {
             var group = app.MapGroup("/api/auth")
                 .WithTags("Authentication");
+
             // Defined auth-related endpoints
             group.MapPost("/register", Register)
                 .WithSummary("Create a new user");
+
             group.MapPost("/login", Login)
                 .WithSummary("login using Email and Password");
+
             group.MapPost("/validate", ValidateToken)
                 .WithSummary("Token validations");
         }
+
         /// <summary>
         /// Registers a new user.
         /// </summary>
@@ -42,26 +48,31 @@ namespace MinimalApi.Endpoints
         {
             // Verify if user exists
             var existingUser = await userManager.FindByEmailAsync(request.Email);
-            if (existingUser != null)
-                return Results.BadRequest(new { error = "User already exists" });
+
+            if (existingUser != null) return Results.BadRequest(new { error = "User already exists" });
+
             // Create user
             var user = new ApplicationUser
             {
-                UserName = request.Email,
-                Email = request.Email
+                Email = request.Email,
+                PasswordHash = request.Password
             };
+
             // Save user
             var result = await userManager.CreateAsync(user, request.Password);
+
             // Register failed
-            if (!result.Succeeded)
-                return Results.BadRequest(new { errors = result.Errors.Select(e => e.Description) });
+            if (!result.Succeeded) return Results.BadRequest(new { errors = result.Errors.Select(e => e.Description) });
+
             // Generate token
             var token = tokenService.GenerateToken(user);
+
             // Return response 
             return Results.Ok(new AuthResponseDTO(
                 token,
                 user.Email!));
         }
+
         /// <summary>
         /// Logs in a user.
         /// </summary>
@@ -78,18 +89,22 @@ namespace MinimalApi.Endpoints
         {
             // Find user
             var user = await userManager.FindByEmailAsync(request.Email);
-            if (user == null)
-                return Results.Unauthorized();
+
+            if (user == null) return Results.Unauthorized();
+
             var result = await signInManager.CheckPasswordSignInAsync(user, request.Password, false);
-            if (!result.Succeeded)
-                return Results.Unauthorized();
+
+            if (!result.Succeeded) return Results.Unauthorized();
+
             // Generate token
             var token = tokenService.GenerateToken(user);
+
             // Return response
             return Results.Ok(new AuthResponseDTO(
                 token,
                 user.Email!));
         }
+
         /// <summary> 
         /// Validates a JWT token.
         /// </summary>
@@ -100,7 +115,9 @@ namespace MinimalApi.Endpoints
             [FromBody] ValidateTokenRequestDTO request,
             ITokenService tokenService)
         {
+
             var principal = tokenService.ValidateToken(request.Token);
+
             return principal != null ? Results.Ok(new { valid = true }) : Results.Ok(new { valid = false });
         }
     }

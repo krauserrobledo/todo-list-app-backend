@@ -2,6 +2,7 @@
 
 namespace Application.Abstractions.Services
 {
+
     /// <summary>
     /// Interface for Category service 
     /// </summary>

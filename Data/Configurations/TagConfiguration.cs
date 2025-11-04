@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infraestructure.Configurations
 {
+
     /// <summary>
     /// Configures the entity type <see cref="Tag"/> for the database context.
     /// </summary>
@@ -12,8 +13,10 @@ namespace Infraestructure.Configurations
     /// ID, and enforces cascading deletes for related <see cref="TaskTag"/> entities.</remarks>
     public class TagConfiguration : IEntityTypeConfiguration<Tag>
     {
+
         public void Configure(EntityTypeBuilder<Tag> builder)
         {
+
             // Table name
             builder.ToTable("Tags");
 

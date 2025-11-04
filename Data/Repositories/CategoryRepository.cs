@@ -4,12 +4,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infraestructure.Repositories
 {
+
     /// <summary>
     /// Repository implementation for category repository interface
     /// </summary>
     /// <param name="context"></param>
     public class CategoryRepository(AppDbContext context) : ICategoryRepository
     {
+
         // DbContext instance
         private readonly AppDbContext _context = context;
 

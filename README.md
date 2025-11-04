@@ -14,16 +14,16 @@
 	- https://www.youtube.com/watch?v=RRrsFE6OXAQ&list=LL&index=3 
 
 
-# *** Weekly Sprint (10/13)***
+# ***Weekly Sprint (10/13)***
 
   
-## *** Project Structure.***
+## ***Project Structure.***
 
 	- Empty solution creation.
   	- Projects creation as library classes:  Domain, Data, Application.
   	- MinimalApi Project creation.
 
-## *** Domain Layer.***
+## ***Domain Layer.***
 	
 	- Model folder created inside Domain Library Class containning entity models:
 		
@@ -38,7 +38,7 @@
 	*Modified Models for Identity implementation.
 
 
-## ***5. Data Layer.***
+## ***Data Layer.***
 
 	- AppDbContext file created inside Data layer.
 	- Configurations added :
@@ -89,18 +89,13 @@
 	- Services/TokenService.cs moved from Application Layer to solve dependency Cycle.
 
 
-# ***6. Application Layer.***
+# ***Application Layer.***
 	
-	- Abstractions Folder on Application Project Containning Repository Interfaces for Repository Pattern. (Moved To Domain Project to solve dependency Cycle)
+	- Abstractions Folder on Application Project Containning Repository Interfaces for Repository Pattern. 
 	
 	- Identity Folder added to contain Application user model
 	
-	- Migrations folder generated in this Layer for Data Base Migration.
-  
-
-## *** Application Layer.***
-	
-	- Abstractions Folder on Application Project Containning Repository Interfaces for Repository Pattern.
+	- Migrations folder generated in this Layer for Data Base Migrations.
 	
 		- ICategoryRepository
 	  	- ISubTaskRepository
@@ -109,8 +104,9 @@
 	  	- IuserRepository (Deleted)
 	  	- ITokenService (Moved)
 	   	- Service/Token service implementation (Moved to Data Layer).
+		
 
-## *** Minimal API.***
+## ***Minimal API.***
 
 	  - This project is set as single startup project in Solution.
 	    
@@ -141,7 +137,7 @@
 	
 ----
 
-# *** Weekly Sprint (10/20)***
+# ***Weekly Sprint (10/20)***
 
 	- JWT
 	- Solve DEPENDENCY CYCLE between Application and Data.
@@ -345,4 +341,29 @@
 ### ***Practice Angular Basics***
 
 	- Created login with API communication for my own APP
-	
+
+----
+
+# ***WEEKLY SPRINT 11/03***
+
+## ***Backend:***
+ 
+- Code fixes for Clean Arch. after implementing Services:
+
+  	- Move Repositories Interfaces to Application Layer.
+  	- Finish implementation for Using services in Endpoints.
+  	- Update Line Comments up to current changes.
+		
+- Dependency Injections:
+  
+	- Created containers for Extension Methods by Layer.
+ 	- Dependency Injection containers configuration in program.cs
+  	- Endpoint Checking using swagger.
+ 
+## ***Frontend:***
+ 
+- Initialize Angular project.
+  
+- Set project structure.
+  
+- Create Auth Module.

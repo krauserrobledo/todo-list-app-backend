@@ -5,6 +5,7 @@ using Tasks = Domain.Models.Task;
 
 namespace Infraestructure.Configurations
 {
+
     /// <summary>
     /// Configures the entity type <see cref="Tasks"/> for the database context.
     /// </summary>

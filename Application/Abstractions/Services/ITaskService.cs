@@ -1,6 +1,8 @@
 ﻿using Tasks = Domain.Models.Task;
+
 namespace Application.Abstractions.Services
 {
+
     /// <summary>
     /// Interface for Task service
     /// </summary>

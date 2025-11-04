@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infraestructure.Configurations
 {
+
     /// <summary>
     /// Configures the entity type <see cref="Category"/> for the database context.
     /// </summary>
@@ -16,6 +17,7 @@ namespace Infraestructure.Configurations
     /// and <see cref="TaskCategory"/>, with cascading deletes.</remarks>
     public class CategoryConfiguration : IEntityTypeConfiguration<Category>
     {
+
         public void Configure(EntityTypeBuilder<Category> builder)
         {
             // Table name

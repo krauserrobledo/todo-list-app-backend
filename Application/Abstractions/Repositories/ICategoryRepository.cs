@@ -2,6 +2,7 @@
 
 namespace Application.Abstractions.Repositories
 {
+
     /// <summary>
     /// Interface for Category repository
     /// </summary>

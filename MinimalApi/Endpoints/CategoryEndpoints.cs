@@ -47,7 +47,7 @@ namespace MinimalApi.Endpoints
         /// </summary>
         /// <remarks>Validates the request and ensures the category name is unique for the user before creation.</remarks>
         /// <param name="request">The category creation request.</param>
-        /// <param name="categoryRepository">The category repository.</param>
+        /// <param name="categoryService">The category service.</param>
         /// <param name="context">The HTTP context.</param>
         /// <returns>A result indicating the outcome of the category creation.</returns>
         private static async Task<IResult> CreateCategory(
@@ -62,9 +62,9 @@ namespace MinimalApi.Endpoints
                 // Get user ID from context
                 var userId = context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
-                if (string.IsNullOrEmpty(userId))
-                    return Results.Unauthorized();
+                if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
 
+                // Create from body request and keep current user
                 var category = await categoryService.CreateCategory
                     (
                     request.Name, 
@@ -107,31 +107,37 @@ namespace MinimalApi.Endpoints
             ICategoryService categoryService,
             HttpContext context)
         {
+
             // Logic to update a category
             try
             {
-                
                 // Limit update by user
                 var userId = context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
-                if (string.IsNullOrEmpty(userId))
-                    return Results.Unauthorized();
+                if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
 
                 var updatedCategory = await categoryService.UpdateCategory(
-                    id, userId, request.Name, request.Color);
 
-                if (updatedCategory == null)
-                    return Results.NotFound($"Category with ID {id} not found or access denied");
+                    id,
+                    userId,
+                    request.Name,
+                    request.Color);
+
+                if (updatedCategory == null) return Results.NotFound($"Category with ID {id} not found or access denied");
 
                 var response = CategoryResponse.FromDomain(updatedCategory);
                 return Results.Ok(response);
             }
+
             catch (InvalidOperationException ex)
             {
+
                 return Results.Conflict(ex.Message);
             }
+
             catch (Exception ex)
             {
+
                 return Results.Problem($"Error updating category: {ex.Message}");
             }
         }
@@ -141,7 +147,7 @@ namespace MinimalApi.Endpoints
         /// </summary>
         /// <remarks>Verifies the category existence before deletion.</remarks>
         /// <param name="id">The ID of the category to delete.</param>
-        /// <param name="categoryRepository">The category repository.</param>
+        /// <param name="categoryService">Service for category .</param>
         /// <param name="context">The HTTP context.</param>
         /// <returns>Results indicating the outcome of the deletion.</returns>
         private static async Task<IResult> DeleteCategory(
@@ -154,10 +160,10 @@ namespace MinimalApi.Endpoints
             {
                 // Check user
                 var userId = context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(userId))
-                    return Results.Unauthorized();
 
-                // Delete from repository
+                if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
+
+                // Delete from service
                 var deleted = await categoryService.DeleteCategory(id, userId);
 
                 if (!deleted)
@@ -195,20 +201,18 @@ namespace MinimalApi.Endpoints
                 // Check user
                 var userId = context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
-                if (string.IsNullOrEmpty(userId))
-                    return Results.Unauthorized();
+                if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
 
                 var category = await categoryService.GetCategoryById(id, userId);
 
                 // Check existence
-                if (category == null)
-                {
-                    return Results.NotFound($"Category with ID {id} not found.");
-                }
+                if (category == null) return Results.NotFound($"Category with ID {id} not found.");
 
                 var response = CategoryResponse.FromDomain(category);
+
                 return Results.Ok(response);
             }
+
             catch (Exception ex)
             {
                 return Results.Problem($"Error retrieving category: {ex.Message}");
@@ -226,6 +230,7 @@ namespace MinimalApi.Endpoints
             ICategoryService categoryService,
             HttpContext context)
         {
+
             // Logic to get categories by user
             try
             {
@@ -238,8 +243,10 @@ namespace MinimalApi.Endpoints
                 var categories = await categoryService.GetUserCategories(userId);
 
                 var response = categories.Select(CategoryResponse.FromDomain);
+
                 return Results.Ok(response);
             }
+
             catch (Exception ex)
             {
                 return Results.Problem($"Error retrieving categories: {ex.Message}");
