@@ -2,6 +2,7 @@
 using Application.Abstractions.Repositories;
 using Domain.Models;
 using Tasks = Domain.Models.Task;
+using Microsoft.Extensions.Options;
 
 namespace Application.Services
 {
@@ -14,23 +15,31 @@ namespace Application.Services
         private readonly ITagRepository _tagRepository = tagRepository;
 
         /// <summary>
-        /// 
+        /// Service for task create Endppoints implementing repositories
         /// </summary>
-        /// <param name="title"></param>
-        /// <param name="description"></param>
-        /// <param name="dueDate"></param>
-        /// <param name="userId"></param>
+        /// <param name="title">title for a task</param>
+        /// <param name="description">Description for a task</param>
+        /// <param name="dueDate">Creation date auto by date now</param>
+        /// <param name="userId">task creator´s id</param>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
-        public async Task<Tasks> CreateTask(string title, string? description, DateTime? dueDate, string userId)
+        public async Task<Tasks> CreateTask(string title, string? description, DateTime? dueDate, string userId, string status)
         {
 
             // Business logic validations
-            if (string.IsNullOrWhiteSpace(title))
-                throw new ArgumentException("Task title is required");
-
+            //user validation
             if (string.IsNullOrWhiteSpace(userId))
                 throw new ArgumentException("User ID is required");
+
+            // Validate status
+            if (string.IsNullOrEmpty(status) || !Domain.Constants.TaskStatus.IsValid(status))
+            {
+                status = Domain.Constants.TaskStatus.NonStarted;
+            }
+
+            // Validate Title
+            if (string.IsNullOrWhiteSpace(title))
+                throw new ArgumentException("Task title is required");
 
             var titleExists = _taskRepository.TitleExists(title.Trim(), userId).Result;
 
@@ -44,7 +53,8 @@ namespace Application.Services
                 Title = title.Trim(),
                 Description = description?.Trim(),
                 DueDate = dueDate,
-                UserId = userId
+                UserId = userId,
+                Status = status
             };
 
             return await _taskRepository.Create(task);
@@ -64,10 +74,10 @@ namespace Application.Services
             // Business logic validations
             var existingTask = _taskRepository.GetById(taskId).Result ?? throw new ArgumentException("Task not found");
 
-            if (!string.IsNullOrWhiteSpace(title))
+            if (string.IsNullOrWhiteSpace(title))
                 existingTask.Title = title.Trim();
 
-            if (!string.IsNullOrWhiteSpace(description))
+            if (string.IsNullOrWhiteSpace(description))
                 existingTask.Description = description.Trim();
 
             if (dueDate.HasValue)
@@ -106,10 +116,10 @@ namespace Application.Services
             if (string.IsNullOrWhiteSpace(taskId))
                 throw new ArgumentException("Task ID is required");
 
-            if (!string.IsNullOrWhiteSpace(userId))
+            if (string.IsNullOrWhiteSpace(userId))
                 throw new ArgumentException("User Id required");
 
-            var task = await _taskRepository.GetById(taskId);
+            var task = await _taskRepository.GetWithDetails(taskId);
 
 
             // Return task
@@ -123,7 +133,7 @@ namespace Application.Services
         /// <returns></returns>
         public async Task<ICollection<Tasks>> GetUserTasks(string userId)
         {
-            var existingTasks = await _taskRepository.GetByUser(userId);
+            var existingTasks = await _taskRepository.GetByUserWithDetails(userId);
 
             if (existingTasks == null || existingTasks.Count == 0)
                 return Array.Empty<Tasks>();
@@ -207,31 +217,11 @@ namespace Application.Services
         }
 
         /// <summary>
-        /// 
+        /// Check if title exsists in another task
         /// </summary>
-        /// <param name="title"></param>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentException"></exception>
-        public async Task<bool> TaskTitleExistsAsync(string title, string userId)
-        {
-
-            // Validate inputs
-            if (string.IsNullOrWhiteSpace(title))
-                throw new ArgumentException("Title is required");
-
-            if (string.IsNullOrWhiteSpace(userId))
-                throw new ArgumentException("User ID is required");
-
-            return await _taskRepository.TitleExists(title.Trim(), userId);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="title"></param>
-        /// <param name="userId"></param>
-        /// <returns></returns>
+        /// <param name="title">Title from task to validate</param>
+        /// <param name="userId">Task creators´s id</param>
+        /// <returns>Valid title if false, if true, title already exists</returns>
         /// <exception cref="ArgumentException"></exception>
         public async Task<bool> TaskTitleExists(string title, string userId)
         {
@@ -242,7 +232,7 @@ namespace Application.Services
             if (string.IsNullOrWhiteSpace(userId))
                 throw new ArgumentException("User ID is required");
 
-            return await TaskTitleExistsAsync(title, userId);
+            return await _taskRepository.TitleExists(title, userId);
         }
     }
 }

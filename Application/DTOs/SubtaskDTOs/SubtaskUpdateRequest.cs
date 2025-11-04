@@ -5,8 +5,6 @@
     public record SubtaskUpdateRequest
         (
 
-        string Id, 
-
         string Title
         );
 }

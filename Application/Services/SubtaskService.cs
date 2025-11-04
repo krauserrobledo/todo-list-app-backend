@@ -31,10 +31,15 @@ namespace Application.Services
             if (string.IsNullOrWhiteSpace(taskId))
                 throw new ArgumentException("Task ID is required");
 
-            // Check if belongs to user
+            // Check if task belongs to user
             var task = await _taskRepository.GetById(taskId);
             if (task == null || task.UserId != userId)
                 throw new InvalidOperationException("Task not found or access denied");
+
+            // Check if subtask title already exists for this task
+            var titleExists = await _subtaskRepository.TitleExists(title.Trim(), taskId);
+            if (titleExists)
+                throw new InvalidOperationException($"A subtask with the title '{title}' already exists for this task");
 
             var subtask = new Subtask
             {
@@ -47,7 +52,7 @@ namespace Application.Services
             return await _subtaskRepository.Create(subtask);
         }
         /// <summary>
-        /// 
+        /// Updates an existing Subtask
         /// </summary>
         /// <param name="subtaskId"></param>
         /// <param name="title"></param>

@@ -5,7 +5,6 @@
     public record TaskUpdateRequest
         (
 
-        string Id,
 
         string Title,
 
@@ -15,8 +14,8 @@
 
         string Status,
 
-        List<string> TagIds,
+        List<string>? TagIds,
 
-        List<string> CategoryIds
+        List<string>? CategoryIds
         );
 }

@@ -5,8 +5,6 @@
     public record SubtaskCreateRequest
         (
 
-        string Title, 
-
-        string TaskId
+        string Title
         );
 }

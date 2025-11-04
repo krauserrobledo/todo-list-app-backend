@@ -113,6 +113,7 @@ namespace Infraestructure.Repositories
             var tasks = await _context.Tasks
                 .Where(t => t.UserId == userId)
                 .Include(t => t.Subtasks)
+                .Include(t => t.Subtasks)
                 .Include(t => t.TaskCategories)
                     .ThenInclude(tc => tc.Category)
                 .Include(t => t.TaskTags)
@@ -134,6 +135,7 @@ namespace Infraestructure.Repositories
             // Retrieve task with related entities
             var task = await _context.Tasks
                 .Where(t => t.Id == taskId)
+                .Include(t => t.Subtasks)
                 .Include(t => t.TaskCategories)
                     .ThenInclude(tc => tc.Category)
                 .Include(t => t.TaskTags)
@@ -251,7 +253,7 @@ namespace Infraestructure.Repositories
         {
 
             return await _context.Tasks
-                .AnyAsync(t => t.Title.Equals(title, StringComparison.CurrentCultureIgnoreCase) && t.UserId == userId);
+                .AnyAsync(t => t.Title.ToLower() ==  title.ToLower() && t.UserId == userId);
         }
     }
 }

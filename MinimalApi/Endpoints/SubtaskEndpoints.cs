@@ -20,8 +20,8 @@ namespace MinimalApi.Endpoints
             var group = app.MapGroup("/api/subtasks")
                 .WithTags("Subtasks");
             // Define subtask-related endpoints here
-            group.MapPost("/", CreateSubtask)
-                .WithSummary("Create a new subtask")
+            group.MapPost("/task/{taskId}", CreateSubtask)
+                .WithSummary("Create a new subtask for a specific task")
                 .RequireAuthorization();
 
             group.MapPut("/{id}", UpdateSubtask)
@@ -51,9 +51,9 @@ namespace MinimalApi.Endpoints
         /// <param name="context">The HTTP context.</param>
         /// <returns>Returns the created subtask.</returns>
         private static async Task<IResult> CreateSubtask(
+            string taskId,
             [FromBody] SubtaskCreateRequest request,
             ISubtaskService subtaskService,
-            ITaskService taskService,
             HttpContext context)
         {
             // Logic to create a subtask
@@ -67,18 +67,14 @@ namespace MinimalApi.Endpoints
                 // Validate request
                 if (string.IsNullOrWhiteSpace(request.Title)) return Results.BadRequest("Title is required.");
 
-                if (string.IsNullOrWhiteSpace(request.TaskId)) return Results.BadRequest("TaskId is required.");
-
-                // Check if the associated task exists and belongs to the user
-                var task = await taskService.GetTaskById(request.TaskId, userId);
-
-                if (task == null) return Results.BadRequest("The specified TaskId does not exist.");
+                if (string.IsNullOrWhiteSpace(taskId)) return Results.BadRequest("TaskId is required.");
 
                 // Save to repository
                 var subtask = await subtaskService.CreateSubtask
-                    (userId,
-                    request.TaskId,
-                    request.Title
+                    (
+                    request.Title,
+                    taskId,
+                    userId
                     );
 
                 var response = SubtaskResponse.FromDomain(subtask);
