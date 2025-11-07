@@ -1,6 +1,7 @@
 using Application.Abstractions.Services;
 using Microsoft.AspNetCore.Mvc;
 using Application.DTOs.CategoryDTOs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MinimalApi.Endpoints
 {
@@ -51,6 +52,7 @@ namespace MinimalApi.Endpoints
         /// <param name="context">The HTTP context.</param>
         /// <returns>A result indicating the outcome of the category creation.</returns>
         private static async Task<IResult> CreateCategory(
+            
             [FromBody] CategoryCreateRequest request,
             ICategoryService categoryService,
             HttpContext context)
@@ -203,7 +205,7 @@ namespace MinimalApi.Endpoints
 
                 if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
 
-                var category = await categoryService.GetCategoryById(id, userId);
+                var category = await categoryService.GetCategoryById(id);
 
                 // Check existence
                 if (category == null) return Results.NotFound($"Category with ID {id} not found.");
@@ -237,8 +239,7 @@ namespace MinimalApi.Endpoints
                 // Check user 
                 var userId = context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
-                if (string.IsNullOrEmpty(userId))
-                    return Results.Unauthorized();
+                if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
 
                 var categories = await categoryService.GetUserCategories(userId);
 

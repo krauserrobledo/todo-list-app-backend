@@ -358,12 +358,41 @@
   
 	- Created containers for Extension Methods by Layer.
  	- Dependency Injection containers configuration in program.cs
-  	- Endpoint Checking using swagger.
- 
-## ***Frontend:***
- 
-- Initialize Angular project.
-  
-- Set project structure.
-  
-- Create Auth Module.
+  	
+- Endpoint Checking using swagger:
+
+	- Error HTTP 500 when POST /api/auth/register: 
+
+			Checked if DB server was running. Detected problems in Connection String – fixed. 
+
+	- Error HTTP 400 when POST /api/auth/register (UserName is Empty): 
+
+			Fixed adding UserName string in RegisterRequestDTO and Username request string in Auth/Register Endpoint.
+
+	- Error HTTP 401 when GET /api/categories/{id}  and  /api/categories/user:
+
+			Warned about inverted condition in services get method (! before condition) caused by autocompletion.
+			Unnecesary using of “UserId” (When deleted, it works!). 
+
+	- Error HTTP 500 when GET /api/categories/user:
+
+			Detected inverted condition in services getUserCategories method (! before condition) caused by autocompletion
+
+	- Error HTTP 500 in every tag endpoints but create:
+ 
+ 	 		Caused by inverted conditions, caused by autocompletion.
+
+	- Error HTTP 409 in POST /api/tasks:
+
+   			Caused by using CurrentCultureIgnoreCase in LINQ expression. Replaced by .toLower() method. 
+
+	- After fixing 409 turned in HTTP 400 :
+
+   			Caused by wrong handled status for Task, also detected wrong calling to repository in Services.TaskTitleExists method. Solved fixing TaskService code.		
+
+	- Error HTTP 500 in POST /api/subtasks:
+
+   			Task not found for subtask , caused by wrong order in parameters between service and endpoint, corrected order.
+   			Still 500 , inconsistence found between models and data base, corrected after migration.
+   
+   	- Other minor fixes in GET responses about lack of details

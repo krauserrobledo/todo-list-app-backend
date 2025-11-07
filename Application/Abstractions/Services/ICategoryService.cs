@@ -18,7 +18,7 @@ namespace Application.Abstractions.Services
 
         Task<ICollection<Category>> GetUserCategories(string userId);
 
-        Task<Category?> GetCategoryById(string categoryId, string userId);
+        Task<Category?> GetCategoryById(string categoryId);
 
         Task<ICollection<Category>> GetCategoriesByTask(string taskId, string userId);
     }

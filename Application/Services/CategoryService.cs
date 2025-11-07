@@ -114,7 +114,7 @@ namespace Application.Services
         public async Task<ICollection<Category>> GetUserCategories(string userId)
         {
 
-            if (!string.IsNullOrWhiteSpace(userId)) throw new ArgumentException("User Id required");
+            if (string.IsNullOrWhiteSpace(userId)) throw new ArgumentException("User Id required");
 
             return await _categoryRepository.GetByUser(userId);
         }
@@ -125,18 +125,16 @@ namespace Application.Services
         /// <param name="categoryId">The ID of the category to retrieve.</param>
         /// <param name="userId">The ID of the user who owns the category.</param>
         /// <returns>The category if found and owned by the user; otherwise, null.</returns>
-        public async Task<Category?> GetCategoryById(string categoryId, string userId)
+        public async Task<Category?> GetCategoryById(string categoryId)
         {
-            // Validate inputs
-            if (string.IsNullOrWhiteSpace(categoryId)) throw new ArgumentException("Task ID is required");
 
-            if (!string.IsNullOrWhiteSpace(userId)) throw new ArgumentException("User Id required");
+            if (string.IsNullOrWhiteSpace(categoryId)) throw new ArgumentException("User Id required");
 
             var category = await _categoryRepository.GetById(categoryId);
 
 
             // Return category
-            return category?.UserId == userId ? category : null;
+            return category?.Id == categoryId ? category : null;
         }
 
         /// <summary>
@@ -151,7 +149,7 @@ namespace Application.Services
             // Validate inputs
             if (string.IsNullOrWhiteSpace(taskId)) throw new ArgumentException("Task ID is required");
 
-            if (!string.IsNullOrWhiteSpace(userId)) throw new ArgumentException("User Id required");
+            if (string.IsNullOrWhiteSpace(userId)) throw new ArgumentException("User Id required");
 
             return await _categoryRepository.GetByTaskId(taskId, userId);
         }

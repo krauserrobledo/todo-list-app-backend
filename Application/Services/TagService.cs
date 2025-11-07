@@ -118,7 +118,7 @@ namespace Application.Services
             if (string.IsNullOrWhiteSpace(id))
                 throw new ArgumentException("Task ID is required");
 
-            if (!string.IsNullOrWhiteSpace(userId))
+            if (string.IsNullOrWhiteSpace(userId))
                 throw new ArgumentException("User Id required");
 
             var tag = await _tagRepository.GetById(id);
@@ -152,7 +152,7 @@ namespace Application.Services
         /// <exception cref="NotImplementedException"></exception>
         public async Task<ICollection<Tag>> GetUserTags(string userId)
         {
-            if (!string.IsNullOrWhiteSpace(userId))
+            if (string.IsNullOrWhiteSpace(userId))
                 throw new ArgumentException("User Id required");
 
             return await _tagRepository.GetByUser(userId);

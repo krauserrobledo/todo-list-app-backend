@@ -14,9 +14,6 @@ namespace Infraestructure.Identity
     public class ApplicationUser : IdentityUser
     {
 
-        // Attributes
-        public string? Name { get; set; }
-
         // Navigation properties
         public virtual ICollection<Task> Tasks { get; set; } = [];
         public virtual ICollection<Category> Categories { get; set; } = [];

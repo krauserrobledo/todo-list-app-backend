@@ -26,12 +26,16 @@ namespace Infraestructure.Repositories
 
             // Retrieve existing subtask to ensure uniqueness
             var existingSubtask = await _context.Subtasks
-                .FirstOrDefaultAsync(st => st.Title == subtask.Title && st.TaskId == subtask.TaskId);
+                .FirstOrDefaultAsync(st => st.Title.ToLower() == subtask.Title.ToLower()
+                                && st.TaskId == subtask.TaskId);
+
+            if (existingSubtask != null)
+            {
+                throw new InvalidOperationException($"A subtask with the title '{subtask.Title}' already exists for this task.");
+            }
 
             // set CreatedAt time
-            var currtime = DateTime.UtcNow;
-
-            subtask.CreatedAt = currtime;
+            subtask.CreatedAt = DateTime.UtcNow;
 
             // Add to DbContext and save changes
             await _context.Subtasks.AddAsync(subtask);
@@ -112,6 +116,20 @@ namespace Infraestructure.Repositories
             // Get using Linq
             return await _context.Subtasks
                 .FirstOrDefaultAsync(st =>  st.Id == subTaskId );
-        }          
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="taskId"></param>
+        /// <returns></returns>
+        public async Task<bool> TitleExists(string title, string taskId)
+        {
+            // get existing title 
+            return await _context.Subtasks
+                .AnyAsync(st => st.Title.ToLower() == title.ToLower()
+                             && st.TaskId == taskId);
+        }
     }
 }

@@ -45,7 +45,7 @@ namespace Infraestructure.Repositories
 
             // Retrieve existing tag
             var tagExists = await _context.Tags
-                .FirstOrDefaultAsync(t => t.Id == tag.Id);
+                .FirstOrDefaultAsync(t => t.Id == tag.Id && t.UserId == tag.UserId);
 
             // Update and save if exists
                 await _context.SaveChangesAsync();

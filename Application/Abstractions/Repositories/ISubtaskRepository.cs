@@ -18,5 +18,7 @@ namespace Application.Abstractions.Repositories
         Task<Subtask?> Update(Subtask subtask);
 
         Task<bool> Delete(string id);
+
+        Task<bool> TitleExists(string title, string taskId);
     }
 }

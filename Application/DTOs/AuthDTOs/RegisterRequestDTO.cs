@@ -4,6 +4,7 @@
     // DTO for registration request
     public record RegisterRequestDTO
         (
+        string UserName,
 
         string Email,
 

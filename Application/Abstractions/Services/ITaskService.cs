@@ -9,7 +9,7 @@ namespace Application.Abstractions.Services
     public interface ITaskService
     {
         // business logic for task management
-        Task<Tasks> CreateTask(string title, string? description, DateTime? dueDate, string userId);
+        Task<Tasks> CreateTask(string title, string? description, DateTime? dueDate, string userId, string status);
         Task<Tasks?> UpdateTask(string taskId, string? title, string? description, DateTime? dueDate);
         Task<bool> DeleteTask(string taskId);
         Task<ICollection<Tasks>> GetUserTasks(string userId);

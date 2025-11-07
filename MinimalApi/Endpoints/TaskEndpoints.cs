@@ -1,6 +1,7 @@
 using Application.Abstractions.Services;
 using Application.DTOs.TaskDTOs;
 using Application.Services;
+using Azure;
 using Microsoft.AspNetCore.Mvc;
 using MinimalApi.DTOs.TaskDTOs;
 using System.Security.Claims;
@@ -94,25 +95,13 @@ namespace MinimalApi.Endpoints
                 if (string.IsNullOrWhiteSpace(request.Title))
                     return Results.BadRequest("Task title is required.");
 
-                // Check for duplicate task title for the same user
-                var titleExists = await taskService.TaskTitleExists(request.Title.Trim(), userId);
-
-                if (titleExists)
-                {
-                    return Results.Conflict("A task with the same title already exists for this user.");
-                }
-
-                // Validate status
-                if (!Domain.Constants.TaskStatus.IsValid(request.Status))
-                
-                    return Results.BadRequest("Invalid task status.");
-
                 // Create new Task entity
                 var task = await taskService.CreateTask(
                     request.Title,
                     request.Description,
                     request.DueDate,
-                    userId);
+                    userId,
+                    request.Status);
 
                 // Save to repository
                 var response = TaskResponse.FromDomain(task);
@@ -268,14 +257,33 @@ namespace MinimalApi.Endpoints
                 var task = await taskService.GetTaskById(id, userId);
 
                 if (task == null) return Results.NotFound($"Task with ID {id} not found.");
-                
+
                 return Results.Ok(new
+
                 {
                     id = task.Id,
                     title = task.Title,
                     description = task.Description,
                     dueDate = task.DueDate,
-                    status = task.Status
+                    status = task.Status,
+                    userId = task.UserId,
+                    subtasks = task.Subtasks?.Select(st => new
+                    {
+                        id = st.Id,
+                        title = st.Title,
+                        createdAt = st.CreatedAt
+                    }) ?? Enumerable.Empty<object>(),
+                    categories = task.TaskCategories?.Select(tc => new
+                    {
+                        id = tc.Category?.Id,
+                        name = tc.Category?.Name,
+                        color = tc.Category?.Color
+                    }) ?? Enumerable.Empty<object>(),
+                    tags = task.TaskTags?.Select(tt => new
+                    {
+                        id = tt.Tag?.Id,
+                        name = tt.Tag?.Name
+                    }) ?? Enumerable.Empty<object>()
                 });
             }
 
@@ -321,24 +329,24 @@ namespace MinimalApi.Endpoints
                     description = t.Description,
                     dueDate = t.DueDate,
                     status = t.Status,
-                    categories = categoryService
-                        .GetUserCategories(userId)
-                        .Result
-                        .Where(c => t.TaskCategories.Any(tc => tc.TaskId == t.Id))
-                        .Select(c => new
-                        {
-                            id = c.Id,
-                            name = c.Name,
-                            color = c.Color
-                        }),
-                    tags = tagService
-                        .GetTagsByTask(t.Id, userId)
-                        .Result
-                        .Select(tag => new
-                        {
-                            id = tag.Id,
-                            name = tag.Name
-                        })
+                    userId = t.UserId,
+                    subtasks = t.Subtasks?.Select(st => new
+                    {
+                        id = st.Id,
+                        title = st.Title,
+                        createdAt = st.CreatedAt
+                    }) ?? Enumerable.Empty<object>(),
+                    categories = t.TaskCategories?.Select(tc => new
+                    {
+                        id = tc.Category?.Id,
+                        name = tc.Category?.Name,
+                        color = tc.Category?.Color
+                    }) ?? Enumerable.Empty<object>(),
+                    tags = t.TaskTags?.Select(tt => new
+                    {
+                        id = tt.Tag?.Id,
+                        name = tt.Tag?.Name
+                    }) ?? Enumerable.Empty<object>()
                 }));
             }
             catch (Exception ex)
@@ -379,7 +387,7 @@ namespace MinimalApi.Endpoints
 
 
                 // Check if category exists
-                var existingCategory = await categoryService.GetCategoryById(categoryId, userId);
+                var existingCategory = await categoryService.GetCategoryById(categoryId);
 
                 if (existingCategory == null) return Results.NotFound($"Category not found");
 
@@ -473,7 +481,7 @@ namespace MinimalApi.Endpoints
                 if (existingTask == null || existingTask.UserId != userId) return Results.NotFound($"Task not found");
 
                 // Check if category exists
-                var existingCategory = await categoryService.GetCategoryById(categoryId, userId);
+                var existingCategory = await categoryService.GetCategoryById(categoryId);
 
                 if (existingCategory == null || existingTask.UserId !=userId) return Results.NotFound($"Category not found");
 

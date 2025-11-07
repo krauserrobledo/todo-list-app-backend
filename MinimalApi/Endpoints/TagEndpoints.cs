@@ -107,7 +107,6 @@ namespace MinimalApi.Endpoints
                 var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
 
-                if (userId == null) return Results.Unauthorized();
 
                 //Check if EXISTS
                 var existingTag = await tagService.GetTagById(id, userId);
