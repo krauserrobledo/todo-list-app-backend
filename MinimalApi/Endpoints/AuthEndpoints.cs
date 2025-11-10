@@ -61,16 +61,32 @@ namespace MinimalApi.Endpoints
             // Save user
             var result = await userManager.CreateAsync(user, request.Password);
 
-            // Register failed
-            if (!result.Succeeded) return Results.BadRequest(new { errors = result.Errors.Select(e => e.Description) });
+            // Register failed 
+            if (!result.Succeeded)
+            {
+                // Identify error
+                var errorMessages = result.Errors.Select(e => e.Description).ToList();
+
+                // Username exists
+                var userNameErrors = errorMessages.Where(e => e.Contains("username", StringComparison.OrdinalIgnoreCase) ||
+                                                             e.Contains("user name", StringComparison.OrdinalIgnoreCase));
+
+                if (userNameErrors.Any())
+                {
+                    return Results.BadRequest(new
+                    {
+                        error = $"El nombre de usuario '{request.UserName}' ya está en uso. Por favor elige otro."
+                    });
+                }
+
+                return Results.BadRequest(new { errors = errorMessages });
+            }
 
             // Generate token
             var token = tokenService.GenerateToken(user);
 
             // Return response 
-            return Results.Ok(new AuthResponseDTO(
-                token,
-                user.Email!));
+            return Results.Ok(new AuthResponseDTO(token, user.Email!));
         }
 
         /// <summary>
