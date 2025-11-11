@@ -75,7 +75,7 @@ namespace MinimalApi.Endpoints
                 {
                     return Results.BadRequest(new
                     {
-                        error = $"El nombre de usuario '{request.UserName}' ya está en uso. Por favor elige otro."
+                        error = $"UserName '{request.UserName}' has been already chosen."
                     });
                 }
 
