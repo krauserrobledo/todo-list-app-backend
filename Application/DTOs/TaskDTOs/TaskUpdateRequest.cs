@@ -1,10 +1,9 @@
-﻿namespace MinimalApi.DTOs.TaskDTOs
+﻿namespace Application.DTOs.TaskDTOs
 {
 
     // Task Update DTO
     public record TaskUpdateRequest
         (
-
 
         string Title,
 

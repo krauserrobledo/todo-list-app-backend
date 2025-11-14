@@ -1,4 +1,4 @@
-﻿namespace MinimalApi.DTOs.TaskDTOs
+﻿namespace Application.DTOs.TaskDTOs
 
 {
     // Task Create DTO
