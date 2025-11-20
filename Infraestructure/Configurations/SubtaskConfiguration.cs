@@ -43,8 +43,7 @@ namespace Infraestructure.Configurations
                 .OnDelete(DeleteBehavior.Cascade);
 
             // Indexes
-            builder.HasIndex(st => st.TaskId)
-                .IsUnique();
+            builder.HasIndex(st => st.TaskId);
         }
     }
 }
