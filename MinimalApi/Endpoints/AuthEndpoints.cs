@@ -2,140 +2,74 @@ using Application.DTOs.AuthDTOs;
 using Infraestructure.Abstractions;
 using Infraestructure.Identity;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 
 namespace MinimalApi.Endpoints
 {
-
-    /// <summary>
-    /// Configures the API endpoints for authentication-related operations.
-    /// </summary>
     public static class AuthEndpoints
     {
-
-        /// <summary>
-        /// Configures the API endpoints for authentication-related operations.
-        /// </summary>
-        /// <param name="app">The endpoint route builder</param>
-        public static void MapAuthEndpoints(this IEndpointRouteBuilder app)
+        public static void MapAuthEndpoints(this WebApplication app)
         {
             var group = app.MapGroup("/api/auth")
                 .WithTags("Authentication");
 
-            // Defined auth-related endpoints
-            group.MapPost("/register", Register)
-                .WithSummary("Create a new user");
-
-            group.MapPost("/login", Login)
-                .WithSummary("login using Email and Password");
-
-            group.MapPost("/validate", ValidateToken)
-                .WithSummary("Token validations");
-        }
-
-        /// <summary>
-        /// Registers a new user.
-        /// </summary>
-        /// <remarks> Register a new user with email and password.</remarks>
-        /// <param name="request">The registration request containing email and password.</param>
-        /// <param name="userManager">The user manager for handling user operations.</param>
-        /// <param name="tokenService">The token service for generating JWT tokens.</param>
-        /// <returns>A result indicating the outcome of the registration.</returns>
-        private static async Task<IResult> Register(
-            [FromBody] RegisterRequestDTO request,
-            UserManager<ApplicationUser> userManager,
-            ITokenService tokenService)
-        {
-            // Verify if user exists
-            var existingUser = await userManager.FindByEmailAsync(request.Email);
-
-            if (existingUser != null) return Results.BadRequest(new { error = "User already exists" });
-
-            // Create user
-            var user = new ApplicationUser
+            // Register
+            group.MapPost("/register", async (
+                RegisterRequestDTO request,
+                UserManager<ApplicationUser> userManager,
+                ITokenService tokenService) =>
             {
-                UserName = request.UserName,
-                Email = request.Email
-            };
+                var existingUser = await userManager.FindByEmailAsync(request.Email);
+                if (existingUser != null)
+                    return Results.BadRequest(new { error = "User already exists" });
 
-            // Save user
-            var result = await userManager.CreateAsync(user, request.Password);
-
-            // Register failed 
-            if (!result.Succeeded)
-            {
-                // Identify error
-                var errorMessages = result.Errors.Select(e => e.Description).ToList();
-
-                // Username exists
-                var userNameErrors = errorMessages.Where(e => e.Contains("username", StringComparison.OrdinalIgnoreCase) ||
-                                                             e.Contains("user name", StringComparison.OrdinalIgnoreCase));
-
-                if (userNameErrors.Any())
+                var user = new ApplicationUser
                 {
-                    return Results.BadRequest(new
-                    {
-                        error = $"UserName '{request.UserName}' has been already chosen."
-                    });
+                    UserName = request.UserName,
+                    Email = request.Email
+                };
+
+                var result = await userManager.CreateAsync(user, request.Password);
+
+                if (!result.Succeeded)
+                {
+                    var errorMessages = result.Errors.Select(e => e.Description).ToList();
+                    return Results.BadRequest(new { errors = errorMessages });
                 }
 
-                return Results.BadRequest(new { errors = errorMessages });
-            }
+                var token = tokenService.GenerateToken(user);
+                return Results.Ok(new AuthResponseDTO(token, user.Email!, user.UserName!));
+            })
+            .WithSummary("Create a new user");
 
-            // Generate token
-            var token = tokenService.GenerateToken(user);
+            // Login
+            group.MapPost("/login", async (
+                LoginRequestDTO request,
+                UserManager<ApplicationUser> userManager,
+                SignInManager<ApplicationUser> signInManager,
+                ITokenService tokenService) =>
+            {
+                var user = await userManager.FindByEmailAsync(request.Email);
+                if (user == null) return Results.Unauthorized();
 
-            // Return response 
-            return Results.Ok(new AuthResponseDTO(token, user.Email, user.UserName));
-        }
+                var result = await signInManager.CheckPasswordSignInAsync(user, request.Password, false);
+                if (!result.Succeeded) return Results.Unauthorized();
 
-        /// <summary>
-        /// Logs in a user.
-        /// </summary>
-        /// <param name="request">The login request containing email and password.</param>
-        /// <param name="userManager">The user manager for handling user operations.</param>
-        /// <param name="signInManager">The sign-in manager for handling user sign-in.</param>
-        /// <param name="tokenService">The token service for generating JWT tokens.</param>
-        /// <returns>A result indicating the outcome of the login.</returns>
-        private static async Task<IResult> Login(
-            [FromBody] LoginRequestDTO request,
-            UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager,
-            ITokenService tokenService)
-        {
-            // Find user
-            var user = await userManager.FindByEmailAsync(request.Email);
+                var token = tokenService.GenerateToken(user);
+                return Results.Ok(new AuthResponseDTO(token, user.Email!, user.UserName!));
+            })
+            .WithSummary("Login using Email and Password");
 
-            if (user == null) return Results.Unauthorized();
-
-            var result = await signInManager.CheckPasswordSignInAsync(user, request.Password, false);
-
-            if (!result.Succeeded) return Results.Unauthorized();
-
-            // Generate token
-            var token = tokenService.GenerateToken(user);
-
-            // Return response
-            return Results.Ok(new AuthResponseDTO(
-                token,
-                user.Email!,
-                user.UserName!));
-        }
-
-        /// <summary> 
-        /// Validates a JWT token.
-        /// </summary>
-        /// <param name="request">The token validation request containing the token.</param>
-        /// <param name="tokenService">The token service for validating JWT tokens.</param>
-        /// <returns>A result indicating whether the token is valid.</returns>
-        private static IResult ValidateToken(
-            [FromBody] ValidateTokenRequestDTO request,
-            ITokenService tokenService)
-        {
-
-            var principal = tokenService.ValidateToken(request.Token);
-
-            return principal != null ? Results.Ok(new { valid = true }) : Results.Ok(new { valid = false });
+            // Validate Token
+            group.MapPost("/validate", (
+                ValidateTokenRequestDTO request,
+                ITokenService tokenService) =>
+            {
+                var principal = tokenService.ValidateToken(request.Token);
+                return principal != null
+                    ? Results.Ok(new { valid = true })
+                    : Results.Ok(new { valid = false });
+            })
+            .WithSummary("Token validations");
         }
     }
 }
