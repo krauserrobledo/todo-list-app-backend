@@ -1,4 +1,5 @@
-﻿using Tasks = Domain.Models.Task;
+﻿using Application.DTOs.TaskDTOs;
+using Tasks = Domain.Models.Task;
 
 namespace Application.Abstractions.Services
 {
@@ -8,8 +9,8 @@ namespace Application.Abstractions.Services
     public interface ITaskService
     {
         // Business logic for task management
-        Task<Tasks> CreateTask(string title, string? description, DateTime? dueDate, string userId, string status);
-        Task<Tasks?> UpdateTask(string taskId, string? title, string? description, DateTime? dueDate, string? status);
+        Task<Tasks> CreateTask(TaskCreateRequest request, string userId);
+        Task<Tasks?> UpdateTask(TaskUpdateRequest request, string id, string userId);
         Task<bool> DeleteTask(string taskId);
         Task<ICollection<Tasks>> GetUserTasks(string userId);
         Task<Tasks?> GetTaskById(string taskId, string userId);
