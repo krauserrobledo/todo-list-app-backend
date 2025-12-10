@@ -1,6 +1,5 @@
 ﻿namespace Application.DTOs.TaskDTOs
 {
-
     // Task Update DTO
     public record TaskUpdateRequest
         (

@@ -16,10 +16,10 @@ namespace Application.Services
         /// <summary>
         /// Creates a new Subtask
         /// </summary>
-        /// <param name="title"></param>
-        /// <param name="taskId"></param>
-        /// <param name="userId"></param>
-        /// <returns></returns>
+        /// <param name="title">title for a task</param>
+        /// <param name="taskId">Id for a task</param>
+        /// <param name="userId">owner Id</param>
+        /// <returns> Returns </returns>
         /// <exception cref="ArgumentException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
         public async Task<Subtask> CreateSubtask(string title, string taskId, string userId)

@@ -1,5 +1,6 @@
 ﻿namespace Application.DTOs.SubtaskDTOs
 {
+    // Subtask response DTO
     public class SubtaskResponse
     {
         public string Id { get; set; } = string.Empty;
