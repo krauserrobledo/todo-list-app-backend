@@ -1,6 +1,6 @@
 ﻿using Application.Abstractions.Repositories;
 using Application.Abstractions.Services;
-using Task = System.Threading.Tasks.Task;
+using Application.DTOs.TaskDTOs;
 using Tasks = Domain.Models.Task;
 
 namespace Application.Services
@@ -29,27 +29,28 @@ namespace Application.Services
         /// <param name="userId">task creator´s id</param>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
-        public async Task<Tasks> CreateTask(string title, string? description, DateTime? dueDate, string userId, string status)
+        public async Task<Tasks> CreateTask(TaskCreateRequest request, string userId)
         {
             if (string.IsNullOrWhiteSpace(userId))
                 throw new ArgumentException("User ID is required");
 
-            if (string.IsNullOrEmpty(status) || !Domain.Constants.TaskStatus.IsValid(status))
-                status = Domain.Constants.TaskStatus.NonStarted;
+            var status = string.IsNullOrEmpty(request.Status) || !Domain.Constants.TaskStatus.IsValid(request.Status)
+                ? Domain.Constants.TaskStatus.NonStarted
+                : request.Status;
 
-            if (string.IsNullOrWhiteSpace(title))
+            if (string.IsNullOrWhiteSpace(request.Title))
                 throw new ArgumentException("Task title is required");
 
-            var titleExists = await _taskRepository.TitleExists(title.Trim(), userId);
+            var titleExists = await _taskRepository.TitleExists(request.Title.Trim(), userId);
             if (titleExists)
                 throw new ArgumentException("A task with the same title already exists");
 
             var task = new Tasks
             {
                 Id = Guid.NewGuid().ToString(),
-                Title = title.Trim(),
-                Description = description?.Trim(),
-                DueDate = dueDate,
+                Title = request.Title.Trim(),
+                Description = request.Description?.Trim(),
+                DueDate = request.DueDate,
                 UserId = userId,
                 Status = status
             };
@@ -66,26 +67,33 @@ namespace Application.Services
         /// <param name="dueDate">The new due date for the task.</param>
         /// <returns>The updated task.</returns>
         /// <exception cref="ArgumentException">Thrown when the task is not found.</exception>
-        public async Task<Tasks?> UpdateTask(string taskId, string? title, string? description, DateTime? dueDate, string? status)
+        public async Task<Tasks?> UpdateTask(TaskUpdateRequest request, string id, string userId)
         {
-            var existingTask = await _taskRepository.GetById(taskId)
+            var existingTask = await _taskRepository.GetById(id)
                                ?? throw new ArgumentException("Task not found");
 
-            if (!string.IsNullOrWhiteSpace(title))
-                existingTask.Title = title.Trim();
+            if (existingTask.UserId != userId)
+                return null; 
 
-            if (!string.IsNullOrWhiteSpace(description))
-                existingTask.Description = description.Trim();
+            if (!string.IsNullOrWhiteSpace(request.Title))
+                existingTask.Title = request.Title.Trim();
 
-            if (dueDate.HasValue)
-                existingTask.DueDate = dueDate;
+            if (!string.IsNullOrWhiteSpace(request.Description))
+                existingTask.Description = request.Description.Trim();
 
-            if (!string.IsNullOrWhiteSpace(status))
-                existingTask.Status = status;
+            if (request.DueDate.HasValue)
+                existingTask.DueDate = request.DueDate;
+
+            if (!string.IsNullOrWhiteSpace(request.Status))
+            {
+                if (!Domain.Constants.TaskStatus.IsValid(request.Status))
+                    throw new ArgumentException("Invalid status value");
+
+                existingTask.Status = request.Status;
+            }
 
             return await _taskRepository.Update(existingTask);
         }
-
 
         /// <summary>
         /// Deletes a task by its ID. 

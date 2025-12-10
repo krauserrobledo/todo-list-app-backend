@@ -1,6 +1,6 @@
 using Application.Abstractions.Services;
 using Application.DTOs.CategoryDTOs;
-using System.Security.Claims;
+using MinimalApi.Extensions;
 
 namespace MinimalApi.Endpoints
 {
@@ -12,72 +12,71 @@ namespace MinimalApi.Endpoints
                 .WithTags("Categories")
                 .RequireAuthorization();
 
-            // Create Category
+            // Create a Category
             group.MapPost("/", async (CategoryCreateRequest request, ICategoryService categoryService, HttpContext context) =>
             {
-                var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
+                try
+                {
+                    var category = await categoryService.CreateCategory(
+                        request.Name, request.Color, context.RequireUserId());
 
-                var category = await categoryService.CreateCategory(request.Name, request.Color, userId);
-                var response = CategoryResponse.FromDomain(category);
+                    return Results.Created($"/api/categories/{category.Id}", CategoryResponse.FromDomain(category));
+                }
+                catch (UnauthorizedAccessException) { return Results.Unauthorized(); }
+                catch (ArgumentException ex) { return Results.BadRequest(ex.Message); }
+                catch (InvalidOperationException ex) { return Results.Conflict(ex.Message); }
+            }).WithSummary("Create a new Category");
 
-                return Results.Created($"/api/categories/{category.Id}", response);
-            })
-            .WithSummary("Create a new Category");
-
-            // Update Category
+            // Update an existing Category
             group.MapPut("/{id}", async (string id, CategoryUpdateRequest request, ICategoryService categoryService, HttpContext context) =>
             {
-                var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
+                try
+                {
+                    var updated = await categoryService.UpdateCategory(
+                        id, context.RequireUserId(), request.Name, request.Color);
 
-                var updatedCategory = await categoryService.UpdateCategory(id, userId, request.Name, request.Color);
-                if (updatedCategory == null) return Results.NotFound($"Category with ID {id} not found or access denied");
+                    return updated is null
+                        ? Results.NotFound($"Category {id} not found or access denied")
+                        : Results.Ok(CategoryResponse.FromDomain(updated));
+                }
+                catch (UnauthorizedAccessException) { return Results.Unauthorized(); }
+                catch (InvalidOperationException ex) { return Results.Conflict(ex.Message); }
+            }).WithSummary("Update an existing Category");
 
-                var response = CategoryResponse.FromDomain(updatedCategory);
-                return Results.Ok(response);
-            })
-            .WithSummary("Update an existing Category");
-
-            // Delete Category
+            //Delete an existing Category
             group.MapDelete("/{id}", async (string id, ICategoryService categoryService, HttpContext context) =>
             {
-                var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
+                try
+                {
+                    var deleted = await categoryService.DeleteCategory(id, context.RequireUserId());
+                    return deleted ? Results.NoContent() : Results.NotFound($"Category {id} not found or access denied");
+                }
+                catch (UnauthorizedAccessException) { return Results.Unauthorized(); }
+            }).WithSummary("Delete an existing Category");
 
-                var deleted = await categoryService.DeleteCategory(id, userId);
-                if (!deleted) return Results.Problem("Error while deleting Category");
-
-                return Results.NoContent();
-            })
-            .WithSummary("Delete a Category by ID");
-
-            // Get Category by Id
+            //Get a Category by Id
             group.MapGet("/{id}", async (string id, ICategoryService categoryService, HttpContext context) =>
             {
-                var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
-
-                var category = await categoryService.GetCategoryById(id);
-                if (category == null) return Results.NotFound($"Category with ID {id} not found.");
-
-                var response = CategoryResponse.FromDomain(category);
-                return Results.Ok(response);
-            })
-            .WithSummary("Get a Category by ID");
+                try
+                {
+                    var category = await categoryService.GetCategoryById(id);
+                    return category is null
+                        ? Results.NotFound($"Category {id} not found")
+                        : Results.Ok(CategoryResponse.FromDomain(category));
+                }
+                catch (UnauthorizedAccessException) { return Results.Unauthorized(); }
+            }).WithSummary("Get details from an existing Category");
 
             // Get Categories by User
             group.MapGet("/user/", async (ICategoryService categoryService, HttpContext context) =>
             {
-                var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
-
-                var categories = await categoryService.GetUserCategories(userId);
-                var response = categories.Select(CategoryResponse.FromDomain);
-
-                return Results.Ok(response);
-            })
-            .WithSummary("Get Categories by User ID");
+                try
+                {
+                    var categories = await categoryService.GetUserCategories(context.RequireUserId());
+                    return Results.Ok(categories.Select(CategoryResponse.FromDomain));
+                }
+                catch (UnauthorizedAccessException) { return Results.Unauthorized(); }
+            }).WithSummary("Get all Categories which belong to current user");
         }
     }
 }

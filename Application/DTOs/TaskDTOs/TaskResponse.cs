@@ -4,6 +4,7 @@ using Application.DTOs.TagDTOs;
 
 namespace Application.DTOs.TaskDTOs
 {
+    // Task response DTO
     public class TaskResponse
     {
         public string Id { get; set; } = string.Empty;

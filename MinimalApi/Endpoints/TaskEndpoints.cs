@@ -1,6 +1,6 @@
 using Application.Abstractions.Services;
 using Application.DTOs.TaskDTOs;
-using System.Security.Claims;
+using MinimalApi.Extensions;
 
 namespace MinimalApi.Endpoints
 {
@@ -12,165 +12,189 @@ namespace MinimalApi.Endpoints
                 .WithTags("Tasks")
                 .RequireAuthorization();
 
+
             // Create Task
             group.MapPost("/", async (TaskCreateRequest request, ITaskService taskService, HttpContext context) =>
             {
-                var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
-                if (string.IsNullOrWhiteSpace(request.Title)) return Results.BadRequest("Task title is required.");
+                try
+                {
+                    var task = await taskService.CreateTask(request, context.RequireUserId());
 
-                var task = await taskService.CreateTask(
-                    request.Title,
-                    request.Description,
-                    request.DueDate,
-                    userId,
-                    request.Status);
+                    return Results.Created($"/api/tasks/{task.Id}", TaskResponse.FromDomain(task));
+                }
 
-                if (task == null) return Results.Problem("Error creating task");
+                catch (UnauthorizedAccessException)
+                {
+                    return Results.Unauthorized();
+                }
 
-                var response = TaskResponse.FromDomain(task);
-                return Results.Created($"/api/tasks/{task.Id}", response);
+                catch (ArgumentException ex)
+                {
+                    return Results.BadRequest(ex.Message);
+                }
+
+                catch (InvalidOperationException ex)
+                {
+                    return Results.Conflict(ex.Message);
+                }
             })
             .WithSummary("Create a Task");
+
 
             // Update Task
             group.MapPut("/{id}", async (string id, TaskUpdateRequest request, ITaskService taskService, HttpContext context) =>
             {
-                var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
+                try
+                {
+                    var updated = await taskService.UpdateTask(request, id, context.RequireUserId());
 
-                var existingTask = await taskService.GetTaskById(id, userId);
-                if (existingTask == null) return Results.NotFound("Task not found");
+                    return updated is null
+                        ? Results.NotFound($"Task {id} not found or access denied")
+                        : Results.Ok(TaskResponse.FromDomain(updated));
+                }
 
-                var taskExists = await taskService.TaskTitleExists(request.Title, userId);
-                if (taskExists && !string.Equals(existingTask.Title, request.Title, StringComparison.OrdinalIgnoreCase))
-                    return Results.Conflict("A task with the same title already exists for this user.");
+                catch (UnauthorizedAccessException)
+                {
+                    return Results.Unauthorized();
+                }
 
-                var updatedTask = await taskService.UpdateTask(
-                    id,
-                    request.Title ?? existingTask.Title,
-                    request.Description ?? existingTask.Description,
-                    request.DueDate ?? existingTask.DueDate,
-                    request.Status ?? existingTask.Status);
+                catch (ArgumentException ex)
+                {
+                    return Results.BadRequest(ex.Message);
+                }
 
-                if (updatedTask == null) return Results.NotFound($"Task with ID {id} not found or access denied");
-
-                var response = TaskResponse.FromDomain(updatedTask);
-                return Results.Ok(response);
+                catch (InvalidOperationException ex)
+                {
+                    return Results.Conflict(ex.Message);
+                }
             })
             .WithSummary("Update a Task");
+
 
             // Delete Task
             group.MapDelete("/{id}", async (string id, ITaskService taskService, HttpContext context) =>
             {
-                var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
+                try
+                {
+                    var deleted = await taskService.DeleteTask(id);
 
-                var existingTask = await taskService.GetTaskById(id, userId);
-                if (existingTask == null) return Results.NotFound("Task not found");
-
-                var deleted = await taskService.DeleteTask(id);
-                if (!deleted) return Results.Problem("Error deleting task");
-
-                return Results.NoContent();
+                    return deleted
+                        ? Results.NoContent()
+                        : Results.NotFound($"Task {id} not found or access denied");
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    return Results.Unauthorized();
+                }
             })
             .WithSummary("Remove selected Task by Id");
+
 
             // Get Task by Id
             group.MapGet("/{id}", async (string id, ITaskService taskService, HttpContext context) =>
             {
-                var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
+                try
+                {
+                    var task = await taskService.GetTaskById(id, context.RequireUserId());
 
-                var task = await taskService.GetTaskById(id, userId);
-                if (task == null) return Results.NotFound($"Task with ID {id} not found.");
-
-                var response = TaskResponse.FromDomain(task);
-                return Results.Ok(response);
+                    return task is null
+                        ? Results.NotFound($"Task {id} not found or access denied")
+                        : Results.Ok(TaskResponse.FromDomain(task));
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    return Results.Unauthorized();
+                }
+                catch (ArgumentException ex)
+                {
+                    return Results.BadRequest(ex.Message);
+                }
             })
             .WithSummary("Get Task by Id");
 
-            // Get Tasks by User
-            group.MapGet("/user/", async (ITaskService taskService, HttpContext context) =>
-            {
-                var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
 
-                var tasks = await taskService.GetUserTasks(userId);
-                var response = tasks.Select(TaskResponse.FromDomain);
-                return Results.Ok(response);
+            // Get Tasks by User
+            group.MapGet("/user", async (ITaskService taskService, HttpContext context) =>
+            {
+                try
+                {
+                    var tasks = await taskService.GetUserTasks(context.RequireUserId());
+
+                    return Results.Ok(tasks.Select(TaskResponse.FromDomain));
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    return Results.Unauthorized();
+                }
             })
             .WithSummary("Get Tasks by User Id with Details");
 
+
             // Add Category to Task
-            group.MapPost("/{taskId}/categories/{categoryId}", async (string taskId, string categoryId, ITaskService taskService, ICategoryService categoryService, HttpContext context) =>
+            group.MapPost("/{taskId}/categories/{categoryId}", async (string taskId, string categoryId, ITaskService taskService) =>
             {
-                var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
+                try
+                {
+                    var updatedTask = await taskService.AddCategoryToTask(taskId, categoryId);
 
-                var existingTask = await taskService.GetTaskById(taskId, userId);
-                if (existingTask == null) return Results.NotFound("Task not found");
-
-                var existingCategory = await categoryService.GetCategoryById(categoryId);
-                if (existingCategory == null) return Results.NotFound("Category not found");
-
-                var updatedTask = await taskService.AddCategoryToTask(taskId, categoryId);
-                var response = TaskResponse.FromDomain(updatedTask);
-                return Results.Ok(response);
+                    return Results.Ok(TaskResponse.FromDomain(updatedTask!));
+                }
+                catch (ArgumentException ex)
+                {
+                    return Results.BadRequest(ex.Message);
+                }
             })
             .WithSummary("Add Category to existing task");
 
+
             // Add Tag to Task
-            group.MapPost("/{taskId}/tags/{tagId}", async (string taskId, string tagId, ITagService tagService, ITaskService taskService, HttpContext context) =>
+            group.MapPost("/{taskId}/tags/{tagId}", async (string taskId, string tagId, ITaskService taskService) =>
             {
-                var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
+                try
+                {
+                    var updatedTask = await taskService.AddTagToTask(taskId, tagId);
 
-                var existingTask = await taskService.GetTaskById(taskId, userId);
-                if (existingTask == null) return Results.NotFound("Task not found");
-
-                var existingTag = await tagService.GetTagById(tagId, userId);
-                if (existingTag == null) return Results.NotFound("Tag not found");
-
-                var updatedTask = await taskService.AddTagToTask(taskId, tagId);
-                var response = TaskResponse.FromDomain(updatedTask);
-                return Results.Ok(response);
+                    return Results.Ok(TaskResponse.FromDomain(updatedTask!));
+                }
+                catch (ArgumentException ex)
+                {
+                    return Results.BadRequest(ex.Message);
+                }
             })
             .WithSummary("Add Tag to existing Task");
 
+
             // Remove Category from Task
-            group.MapDelete("/{taskId}/categories/{categoryId}", async (string taskId, string categoryId, ITaskService taskService, ICategoryService categoryService, HttpContext context) =>
+            group.MapDelete("/{taskId}/categories/{categoryId}", async (string taskId, string categoryId, ITaskService taskService) =>
             {
-                var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
+                try
+                {
+                    var updatedTask = await taskService.RemoveCategoryFromTask(taskId, categoryId);
 
-                var existingTask = await taskService.GetTaskById(taskId, userId);
-                if (existingTask == null) return Results.NotFound("Task not found");
+                    return Results.Ok(
 
-                var existingCategory = await categoryService.GetCategoryById(categoryId);
-                if (existingCategory == null) return Results.NotFound("Category not found");
-
-                var updatedTask = await taskService.RemoveCategoryFromTask(taskId, categoryId);
-                var response = TaskResponse.FromDomain(updatedTask);
-                return Results.Ok(response);
+                        TaskResponse.FromDomain(updatedTask!));
+                }
+                catch (ArgumentException ex)
+                {
+                    return Results.BadRequest(ex.Message);
+                }
             })
             .WithSummary("Remove selected category from Task by Id");
 
             // Remove Tag from Task
-            group.MapDelete("/{taskId}/tags/{tagId}", async (string taskId, string tagId, ITagService tagService, ITaskService taskService, HttpContext context) =>
+            group.MapDelete("/{taskId}/tags/{tagId}", async (string taskId, string tagId, ITaskService taskService) =>
             {
-                var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
+                try
+                {
+                    var updatedTask = await taskService.RemoveTagFromTask(taskId, tagId);
 
-                var existingTask = await taskService.GetTaskById(taskId, userId);
-                if (existingTask == null) return Results.NotFound("Task not found");
-
-                var existingTag = await tagService.GetTagById(tagId, userId);
-                if (existingTag == null) return Results.NotFound("Tag not found");
-
-                var updatedTask = await taskService.RemoveTagFromTask(taskId, tagId);
-                var response = TaskResponse.FromDomain(updatedTask);
-                return Results.Ok(response);
+                    return Results.Ok(TaskResponse.FromDomain(updatedTask!));
+                }
+                catch (ArgumentException ex)
+                {
+                    return Results.BadRequest(ex.Message);
+                }
             })
             .WithSummary("Remove selected Tag from Task by Id");
         }

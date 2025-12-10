@@ -1,5 +1,6 @@
 ﻿namespace Application.DTOs.CategoryDTOs
 {
+    // Category response DTO
     public class CategoryResponse
     {
         public string Id { get; set; } = string.Empty;
