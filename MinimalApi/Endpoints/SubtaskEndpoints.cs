@@ -6,6 +6,10 @@ namespace MinimalApi.Endpoints
 {
     public static class SubtaskEndpoints
     {
+        /// <summary>
+        /// Maps the subtask endpoints to the specified web application.
+        /// </summary>
+        /// <param name="app">Application to map the endpoints to.</param>
         public static void MapSubtaskEndpoints(this WebApplication app)
         {
             var group = app.MapGroup("/api/subtasks")

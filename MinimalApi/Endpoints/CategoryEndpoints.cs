@@ -6,6 +6,10 @@ namespace MinimalApi.Endpoints
 {
     public static class CategoryEndpoints
     {
+        /// <summary>
+        /// Maps the category endpoints to the specified web application.
+        /// </summary>
+        /// <param name="app">Application to map the endpoints to.</param>
         public static void MapCategoryEndpoints(this WebApplication app)
         {
             var group = app.MapGroup("/api/categories")

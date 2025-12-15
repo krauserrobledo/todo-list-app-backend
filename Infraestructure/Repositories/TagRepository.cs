@@ -8,7 +8,7 @@ namespace Infraestructure.Repositories
     /// <summary>
     /// Repository for managing Tag entities
     /// </summary>
-    /// <param name="context"></param>
+    /// <param name="context">Context for accessing the database</param>
     public class TagRepository(AppDbContext context) : ITagRepository
     {
 
@@ -18,9 +18,9 @@ namespace Infraestructure.Repositories
         /// Create a new tag
         /// </summary>
         /// <remarks> Validates if a tag with the same name exists for the user before creating a new one</remarks>
-        /// <param name="tag"></param>
+        /// <param name="tag">The tag to create</param>
         /// <returns>Returns the created Tag</returns>
-        /// <exception cref="InvalidOperationException"></exception>
+        /// <exception cref="InvalidOperationException">Throwed if tag name already exists</exception>
         public async Task<Tag> Create(Tag tag)
         {
 
@@ -37,8 +37,8 @@ namespace Infraestructure.Repositories
         /// <summary>
         /// Updates an existing tag for a specific user.
         /// </summary>
-        /// <remarks></remarks>
-        /// <param name="tag"></param>
+        /// <remarks>Check if the tag exists before updating</remarks>
+        /// <param name="tag">Tag object with updated values</param>
         /// <returns>If tag exists sets the tag name, else returns null</returns>
         public async Task<Tag?> Update(Tag tag)
         {
@@ -55,7 +55,7 @@ namespace Infraestructure.Repositories
         /// <summary>
         /// Delete an existing tag
         /// </summary>
-        /// <param name="tagId"></param>
+        /// <param name="tagId">Id of the tag to delete</param>
         /// <returns>if tag exists delete and return true, else returns false</returns>
         public async Task<bool> Delete(string tagId)
         {
@@ -79,9 +79,9 @@ namespace Infraestructure.Repositories
         /// Get a tag by Id
         /// </summary>
         /// <remarks> Find a tag by Id and returns</remarks>
-        /// <param name="tagId"></param>
+        /// <param name="tagId">Id for the tag to retrieve</param>
         /// <returns>Returns Tag if exists, else returns exception</returns>
-        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="ArgumentException">Throwed if tag not found</exception>
         public async Task<Tag?> GetById(string tagId)
         {
             // Validate input using LINQ
@@ -94,8 +94,8 @@ namespace Infraestructure.Repositories
         /// Get Tags from Tasks and Users
         /// </summary>
         /// <remarks>Joins TaskTags and Tags tables to get Tags for a specific task and user</remarks>
-        /// <param name="taskId"></param>
-        /// <param name="userId"></param>
+        /// <param name="taskId">Id for the task to retrieve</param>
+        /// <param name="userId">Owner of the task</param>
         /// <returns> Returns async list containing Tags asigned to selected Task</returns>
         public async Task<ICollection<Tag>> GetByTask(string taskId, string userId)
         {
@@ -111,7 +111,7 @@ namespace Infraestructure.Repositories
         /// <summary>
         /// Get tags which belongs to a specific user
         /// </summary>
-        /// <param name="userId"></param>
+        /// <param name="userId">Owner of the tags</param>
         /// <returns>Returns Tags async list </returns>
         public async Task<ICollection<Tag>> GetByUser(string userId)
         {
@@ -126,8 +126,8 @@ namespace Infraestructure.Repositories
         /// <summary>
         /// Check if tag name exists for a specific user
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="userId"></param>
+        /// <param name="name">Name of the tag to check</param>
+        /// <param name="userId">Owner of the tag</param>
         /// <returns>Returns existing tags by  userId and name, using  'await' and 'AnyAsync' method containing </returns>
         public async Task<bool> NameExists(string name, string userId)
         {

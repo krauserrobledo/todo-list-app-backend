@@ -4,14 +4,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infraestructure.Repositories
 {
-
     /// <summary>
     /// Repository implementation for category repository interface
     /// </summary>
-    /// <param name="context"></param>
+    /// <param name="context">Context for database operations</param>
     public class CategoryRepository(AppDbContext context) : ICategoryRepository
     {
-
         // DbContext instance
         private readonly AppDbContext _context = context;
 
@@ -21,10 +19,8 @@ namespace Infraestructure.Repositories
         /// <param name="category">The <see cref="Category"/> object to create.</param>
         /// <returns>The created <see cref="Category"/> object, including its generated or updated properties such as <see
         /// cref="Category.Id"/> and <see cref="Category.Color"/>.</returns>
-       
         public async Task<Category> Create(Category category)
         {
-
             // Data access with no business logic
             await _context.Categories.AddAsync(category);
             await _context.SaveChangesAsync();

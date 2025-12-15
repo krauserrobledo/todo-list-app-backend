@@ -1,6 +1,6 @@
 using Application;
 using Infraestructure;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using MinimalApi.Endpoints;
 using MinimalApi.Middleware;
 
@@ -36,30 +36,24 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 
-    // JWT Configuration for Swagger
+    // JWT Bearer definition
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
-        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer"
+        Name = "Authorization",
+        Description = "Introduce tu JWT con el formato: Bearer {token}"
     });
-    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+
+    // Requirement (v10 syntax)
+    options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
     {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            Array.Empty<string>()
-        }
+        [new OpenApiSecuritySchemeReference("Bearer", document)] = []
     });
 });
+
 
 // CLEAN ARCHITECTURE DEPENDENCY INJECTION CONTAINERS
 // FIRST All infrastructure services (DbContext, Identity, Authentication, Repositories) are registered here

@@ -7,6 +7,10 @@ namespace MinimalApi.Endpoints
 {
     public static class AuthEndpoints
     {
+        /// <summary>
+        /// Maps the authentication endpoints to the specified application.
+        /// </summary>
+        /// <param name="app">Application instance to map the endpoints to.</param>
         public static void MapAuthEndpoints(this WebApplication app)
         {
             var group = app.MapGroup("/api/auth")

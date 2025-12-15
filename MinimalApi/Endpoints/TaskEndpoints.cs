@@ -6,6 +6,10 @@ namespace MinimalApi.Endpoints
 {
     public static class TaskEndpoints
     {
+        /// <summary>
+        /// Maps the tasks endpoints to the specified web application.
+        /// </summary>
+        /// <param name="app">Application to map the endpoints to.</param>
         public static void MapTaskEndpoints(this WebApplication app)
         {
             var group = app.MapGroup("/api/tasks")
@@ -112,7 +116,6 @@ namespace MinimalApi.Endpoints
             })
             .WithSummary("Get Task by Id");
 
-
             // Get Tasks by User
             group.MapGet("/user", async (ITaskService taskService, HttpContext context) =>
             {
@@ -128,7 +131,6 @@ namespace MinimalApi.Endpoints
                 }
             })
             .WithSummary("Get Tasks by User Id with Details");
-
 
             // Add Category to Task
             group.MapPost("/{taskId}/categories/{categoryId}", async (string taskId, string categoryId, ITaskService taskService) =>
@@ -146,7 +148,6 @@ namespace MinimalApi.Endpoints
             })
             .WithSummary("Add Category to existing task");
 
-
             // Add Tag to Task
             group.MapPost("/{taskId}/tags/{tagId}", async (string taskId, string tagId, ITaskService taskService) =>
             {
@@ -162,7 +163,6 @@ namespace MinimalApi.Endpoints
                 }
             })
             .WithSummary("Add Tag to existing Task");
-
 
             // Remove Category from Task
             group.MapDelete("/{taskId}/categories/{categoryId}", async (string taskId, string categoryId, ITaskService taskService) =>

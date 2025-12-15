@@ -18,9 +18,9 @@ namespace Infraestructure.Repositories
         /// <summary>
         /// Creates a new subtask for the specified task, ensuring that the subtask title is unique within that task.
         /// </summary>
-        /// <param name="subtask"></param>
+        /// <param name="subtask">Subtask to create</param>
         /// <returns>If subtask already exists returns exception, else returns created subtask</returns>
-        /// <exception cref="InvalidOperationException"></exception>
+        /// <exception cref="InvalidOperationException">Throw if subtask already exists</exception>
         public async Task<Subtask> Create(Subtask subtask)
         {
 
@@ -46,7 +46,7 @@ namespace Infraestructure.Repositories
         /// <summary>
         /// Update an existing Subtask by title
         /// </summary>
-        /// <param name="subTask"></param>
+        /// <param name="subTask">Subtask to update</param>
         /// <returns>Returns updated subtask or null if not found</returns>
         public async Task<Subtask?> Update(Subtask subTask)
         {
@@ -72,7 +72,7 @@ namespace Infraestructure.Repositories
         /// <summary>
         /// Deletes a subtask by its ID if it exists.
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="id">Id of the subtask to delete</param>
         /// <returns>Returns true if the subtask was deleted, false otherwise.</returns>
         public async Task<bool> Delete(string id)
         {
@@ -93,7 +93,7 @@ namespace Infraestructure.Repositories
         /// <summary>
         /// Gets all subtasks associated with a specific task, ordered by descending ID.
         /// </summary>
-        /// <param name="taskId"></param>
+        /// <param name="taskId">Defines the task id</param>
         /// <returns>Collection of Subtasks</returns>
         public async Task<ICollection<Subtask>> GetAllByTask(string taskId)
         {
@@ -108,7 +108,7 @@ namespace Infraestructure.Repositories
         /// <summary>
         /// Gets a subtask by its ID.
         /// </summary>
-        /// <param name="subTaskId"></param>
+        /// <param name="subTaskId">Defines the subtask id</param>
         /// <returns>Returns existing subtask by FirstDefaultAsync method</returns>
         public async Task<Subtask?> GetById(string subTaskId)
         {
@@ -119,11 +119,11 @@ namespace Infraestructure.Repositories
         }
 
         /// <summary>
-        /// 
+        /// Method to check if a subtask exists by its title and task ID.
         /// </summary>
-        /// <param name="title"></param>
-        /// <param name="taskId"></param>
-        /// <returns></returns>
+        /// <param name="title">Title of the subtask</param>
+        /// <param name="taskId">ID of the task</param>
+        /// <returns>If exists returns true, otherwise false</returns>
         public async Task<bool> TitleExists(string title, string taskId)
         {
             // get existing title 

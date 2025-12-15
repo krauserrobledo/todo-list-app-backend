@@ -10,10 +10,6 @@
 
         DateTime? DueDate,
 
-        string Status,
-
-        List<string>? TagIds,
-
-        List<string>? CategoryIds
+        string Status
         );
 }

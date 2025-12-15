@@ -6,6 +6,10 @@ namespace MinimalApi.Endpoints
 {
     public static class TagEndpoints
     {
+        /// <summary>
+        /// Maps the tags endpoints to the specified web application.
+        /// </summary>
+        /// <param name="app">Application to map the endpoints to.</param>
         public static void MapTagEndpoints(this WebApplication app)
         {
             var group = app.MapGroup("/api/tags")

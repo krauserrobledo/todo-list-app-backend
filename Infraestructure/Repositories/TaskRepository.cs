@@ -40,14 +40,27 @@ namespace Infraestructure.Repositories
         /// <returns> Existing Task</returns>
         public async Task<Tasks?> Update(Tasks task)
         {
-
-            // Check if task exists using LINQ
             var existingTask = await _context.Tasks
-                .FirstOrDefaultAsync(t => t.Id == task.Id); 
+                .FirstOrDefaultAsync(t => t.Id == task.Id);
 
-            // Save changes
+            if (existingTask == null)
+                return null;
+
+            existingTask.Title = task.Title;
+            existingTask.Description = task.Description;
+            existingTask.Status = task.Status;
+            existingTask.DueDate = task.DueDate;
+
             await _context.SaveChangesAsync();
-            return task;
+
+            _context.ChangeTracker.Clear();
+
+            return await _context.Tasks
+                .Where(t => t.Id == task.Id)
+                .Include(t => t.Subtasks)
+                .Include(t => t.TaskCategories).ThenInclude(tc => tc.Category)
+                .Include(t => t.TaskTags).ThenInclude(tt => tt.Tag)
+                .FirstOrDefaultAsync();
         }
 
         /// <summary>

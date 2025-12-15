@@ -18,10 +18,10 @@ namespace Application.Services
         /// </summary>
         /// <param name="title">title for a task</param>
         /// <param name="taskId">Id for a task</param>
-        /// <param name="userId">owner Id</param>
-        /// <returns> Returns </returns>
-        /// <exception cref="ArgumentException"></exception>
-        /// <exception cref="InvalidOperationException"></exception>
+        /// <param name="userId">Owner Id</param>
+        /// <returns>Returns a new subtask</returns>
+        /// <exception cref="ArgumentException">If title is null or empty</exception>
+        /// <exception cref="InvalidOperationException">If task not found or access denied</exception>
         public async Task<Subtask> CreateSubtask(string title, string taskId, string userId)
         {
 
@@ -54,10 +54,10 @@ namespace Application.Services
         /// <summary>
         /// Updates an existing Subtask
         /// </summary>
-        /// <param name="subtaskId"></param>
-        /// <param name="title"></param>
-        /// <param name="userId"></param>
-        /// <returns></returns>
+        /// <param name="subtaskId">Identification for a subtask</param>
+        /// <param name="title">Title for a subtask</param>
+        /// <param name="userId">Owner Id</param>
+        /// <returns>Updated subtask</returns>
         public async Task<Subtask?> UpdateSubtask(string subtaskId, string? title, string userId)
         {
             var subtask = await _subtaskRepository.GetById(subtaskId);
@@ -76,11 +76,11 @@ namespace Application.Services
         }
 
         /// <summary>
-        /// 
+        /// Service method to delete a subtask
         /// </summary>
-        /// <param name="subtaskId"></param>
-        /// <param name="userId"></param>
-        /// <returns></returns>
+        /// <param name="subtaskId">Subtask Id</param>
+        /// <param name="userId">Owner Id</param>
+        /// <returns>returns true if deleted successfully</returns>
         public async Task<bool> DeleteSubtask(string subtaskId, string userId)
         {
             var subtask = await _subtaskRepository.GetById(subtaskId);
@@ -96,11 +96,11 @@ namespace Application.Services
         }
 
         /// <summary>
-        /// 
+        /// Service method to get a subtask by id
         /// </summary>
-        /// <param name="subtaskId"></param>
-        /// <param name="userId"></param>
-        /// <returns></returns>
+        /// <param name="subtaskId">Id for a subtask</param>
+        /// <param name="userId">Owner</param>
+        /// <returns>A subtask finded by Id</returns>
         public async Task<Subtask?> GetSubtaskById(string subtaskId, string userId)
         {
             var subtask = await _subtaskRepository.GetById(subtaskId);
@@ -113,11 +113,11 @@ namespace Application.Services
         }
 
         /// <summary>
-        /// 
+        /// Service method to get all subtasks by task id
         /// </summary>
-        /// <param name="taskId"></param>
-        /// <param name="userId"></param>
-        /// <returns></returns>
+        /// <param name="taskId">Id for a task</param>
+        /// <param name="userId">Owner Id</param>
+        /// <returns>All subtasks for a task</returns>
         public async Task<ICollection<Subtask>> GetSubtasksByTask(string taskId, string userId)
         {
             // Check if belongs to user

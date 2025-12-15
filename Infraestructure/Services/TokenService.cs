@@ -12,7 +12,7 @@ namespace Infraestructure.Services
     /// <summary>
     /// Handles JWT token generation and validation.
     /// </summary>
-    /// <param name="configuration"></param>
+    /// <param name="configuration">Reference to Configuration Interface</param>
     public class TokenService(IConfiguration configuration) : ITokenService
     {
 
@@ -23,7 +23,7 @@ namespace Infraestructure.Services
         /// Generates a JWT token for the specified user.
         /// </summary>
         /// <remarks> The token includes claims such as user ID and email, and is signed using a symmetric security key.</remarks>
-        /// <param name="user"> </param>
+        /// <param name="user">Reference to ApplicationUser</param>
         /// <returns>Token value</returns>
         public string GenerateToken(ApplicationUser user)
         {
@@ -56,7 +56,7 @@ namespace Infraestructure.Services
         /// <summary>
         /// Validates the specified JWT token and returns the associated ClaimsPrincipal if valid.
         /// </summary>
-        /// <param name="token"></param>
+        /// <param name="token">A string representing the JWT token to validate.</param>
         /// <returns>ClaimsPrincipal if valid; otherwise, null.</returns>
         public ClaimsPrincipal? ValidateToken(string token)
         {

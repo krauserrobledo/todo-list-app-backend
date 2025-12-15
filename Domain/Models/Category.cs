@@ -15,5 +15,4 @@ public class Category
     public required string UserId { get; set; }
 
     public virtual ICollection<TaskCategory> TaskCategories { get; set; } = new List<TaskCategory>();
-
 }
